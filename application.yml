@@ -1,0 +1,306 @@
+# ============================================
+# APPLICATION.YML - CONFIGURACIÓN PRINCIPAL
+# Sistema de Reservas Deportivas
+# ============================================
+
+spring:
+  application:
+    name: sm-sport
+
+  # ============================================
+  # CONFIGURACIÓN DE BASE DE DATOS
+  # ============================================
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sm-sport
+    username: postgres
+    password: ${DB_PASSWORD:farit_4}
+    driver-class-name: org.postgresql.Driver
+
+    # Pool de conexiones HikariCP (por defecto en Spring Boot)
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+      pool-name: ReservasDeportivasHikariCP
+
+  # ============================================
+  # CONFIGURACIÓN JPA/HIBERNATE
+  # ============================================
+  jpa:
+    hibernate:
+      ddl-auto: validate # validate, update, create, create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+
+    show-sql: false # true en desarrollo, false en producción
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        # Configuración de caché de segundo nivel (opcional)
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+        # Estadísticas de Hibernate (solo desarrollo)
+        generate_statistics: false
+
+    # Desactivar Open Session In View (mejor práctica)
+    open-in-view: false
+
+    # Habilitar repositorios JPA
+    repositories:
+      enabled: true
+
+  # ============================================
+  # CONFIGURACIÓN DE AUDITORÍA JPA
+  # ============================================
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default
+
+# ============================================
+# CONFIGURACIÓN JWT
+# ============================================
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: 86400000 # 24 horas en milisegundos (1000 * 60 * 60 * 24)
+  refresh-expiration: 604800000 # 7 días en milisegundos
+
+# ============================================
+# CONFIGURACIÓN DEL SERVIDOR
+# ============================================
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+  # Configuración de errores
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param # never, always, on_param
+    include-exception: false
+
+  # Compression
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    root: INFO
+    com.reservas.deportivas: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: logs/reservas-deportivas.log
+    max-size: 10MB
+    max-history: 30
+
+# ============================================
+# SWAGGER/OPENAPI DOCUMENTATION
+# ============================================
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+
+  show-actuator: false
+
+# ============================================
+# ACTUATOR (MONITOREO)
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# ============================================
+# CONFIGURACIÓN DE APLICACIÓN
+# ============================================
+app:
+  # Configuración de seguridad
+  security:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:4200
+      - https://tudominio.com
+
+  # Configuración de notificaciones
+  notifications:
+    email:
+      enabled: true
+      from: noreply@reservasdeportivas.com
+    push:
+      enabled: true
+
+  # Configuración de pagos
+  payment:
+    provider: stripe # stripe, mercadopago, etc.
+    test-mode: true
+
+  # Configuración de archivos
+  file:
+    upload-dir: ./uploads
+    max-file-size: 5MB
+    allowed-extensions: jpg,jpeg,png,pdf
+
+# ============================================
+# CONFIGURACIÓN DE POOL DE HILOS
+# ============================================
+spring.task:
+  execution:
+    pool:
+      core-size: 5
+      max-size: 10
+      queue-capacity: 100
+  scheduling:
+    pool:
+      size: 5
+
+---
+# ============================================
+# PERFIL: DESARROLLO
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sm-sport
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+
+logging:
+  level:
+    root: DEBUG
+    com.reservas.deportivas: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  payment:
+    test-mode: true
+
+---
+# ============================================
+# PERFIL: TESTING
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sm-sport_test
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    com.reservas.deportivas: DEBUG
+
+---
+# ============================================
+# PERFIL: PRODUCCIÓN
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+
+logging:
+  level:
+    root: WARN
+    com.reservas.deportivas: INFO
+    org.springframework.security: WARN
+
+server:
+  port: ${PORT:8080}
+
+app:
+  payment:
+    test-mode: false
+  security:
+    allowed-origins:
+      - https://tudominio.com
+      - https://www.tudominio.com

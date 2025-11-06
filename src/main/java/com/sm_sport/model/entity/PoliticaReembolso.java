@@ -1,5 +1,10 @@
 package com.sm_sport.model.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "politicas_reembolso", indexes = {
         @Index(name = "idx_politica_activa", columnList = "activa")

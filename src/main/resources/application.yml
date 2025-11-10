@@ -11,12 +11,11 @@ spring:
   # CONFIGURACIÓN DE BASE DE DATOS
   # ============================================
   datasource:
-    url: jdbc:postgresql://localhost:5432/sm-sport
-    username: postgres
-    password: ${DB_PASSWORD:farit_4}
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:sm-sport}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
-    # Pool de conexiones HikariCP (por defecto en Spring Boot)
     hikari:
       connection-timeout: 20000
       maximum-pool-size: 10
@@ -31,12 +30,12 @@ spring:
   # ============================================
   jpa:
     hibernate:
-      ddl-auto: validate # validate, update, create, create-drop
+      ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
 
-    show-sql: false # true en desarrollo, false en producción
+    show-sql: false
 
     properties:
       hibernate:
@@ -48,23 +47,13 @@ spring:
           batch_versioned_data: true
         order_inserts: true
         order_updates: true
-        # Configuración de caché de segundo nivel (opcional)
         cache:
           use_second_level_cache: false
           use_query_cache: false
-        # Estadísticas de Hibernate (solo desarrollo)
         generate_statistics: false
 
-    # Desactivar Open Session In View (mejor práctica)
     open-in-view: false
 
-    # Habilitar repositorios JPA
-    repositories:
-      enabled: true
-
-  # ============================================
-  # CONFIGURACIÓN DE AUDITORÍA JPA
-  # ============================================
   data:
     jpa:
       repositories:
@@ -74,9 +63,9 @@ spring:
 # CONFIGURACIÓN JWT
 # ============================================
 jwt:
-  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
-  expiration: 86400000 # 24 horas en milisegundos (1000 * 60 * 60 * 24)
-  refresh-expiration: 604800000 # 7 días en milisegundos
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+  refresh-expiration: 604800000
 
 # ============================================
 # CONFIGURACIÓN DEL SERVIDOR
@@ -90,14 +79,12 @@ server:
       enabled: true
       force: true
 
-  # Configuración de errores
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param # never, always, on_param
+    include-stacktrace: on_param
     include-exception: false
 
-  # Compression
   compression:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
@@ -120,27 +107,28 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
   file:
-    name: logs/reservas-deportivas.log
-    max-size: 10MB
-    max-history: 30
+    name: logs/application.log
+  logback:
+    rolling policy:
+      max-file-size: 10MB
+      max-history: 7
 
 # ============================================
 # SWAGGER/OPENAPI DOCUMENTATION
 # ============================================
 springdoc:
   api-docs:
+    enabled: true
     path: /v3/api-docs
-    enabled: true
-
   swagger-ui:
-    path: /swagger-ui.html
     enabled: true
+    path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
     display-request-duration: true
     doc-expansion: none
-
   show-actuator: false
+
 
 # ============================================
 # ACTUATOR (MONITOREO)
@@ -151,29 +139,25 @@ management:
       exposure:
         include: health,info,metrics,prometheus
       base-path: /actuator
-
   endpoint:
     health:
       show-details: when-authorized
       show-components: when-authorized
-
   metrics:
     export:
       prometheus:
-        enabled: true
+        publishing:
+          enabled: true
 
 # ============================================
 # CONFIGURACIÓN DE APLICACIÓN
 # ============================================
 app:
-  # Configuración de seguridad
   security:
     allowed-origins:
       - http://localhost:3000
       - http://localhost:4200
-      - https://tudominio.com
 
-  # Configuración de notificaciones
   notifications:
     email:
       enabled: true
@@ -181,20 +165,15 @@ app:
     push:
       enabled: true
 
-  # Configuración de pagos
   payment:
-    provider: stripe # stripe, mercadopago, etc.
+    provider: stripe
     test-mode: true
 
-  # Configuración de archivos
   file:
     upload-dir: ./uploads
     max-file-size: 5MB
     allowed-extensions: jpg,jpeg,png,pdf
 
-# ============================================
-# CONFIGURACIÓN DE POOL DE HILOS
-# ============================================
 spring.task:
   execution:
     pool:
@@ -206,19 +185,15 @@ spring.task:
       size: 5
 
 ---
-# ============================================
 # PERFIL: DESARROLLO
-# ============================================
 spring:
   config:
     activate:
       on-profile: dev
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/sm-sport
-    username: postgres
-    password: postgres
-
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:sm-sport}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -227,50 +202,40 @@ spring:
       hibernate:
         format_sql: true
         generate_statistics: true
-
 logging:
   level:
     root: DEBUG
     com.reservas.deportivas: DEBUG
     org.springframework.security: DEBUG
-
 app:
   payment:
     test-mode: true
 
 ---
-# ============================================
 # PERFIL: TESTING
-# ============================================
 spring:
   config:
     activate:
       on-profile: test
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/sm-sport_test
-    username: postgres
-    password: postgres
-
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:sm-sport_test}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
-
 logging:
   level:
     root: WARN
     com.reservas.deportivas: DEBUG
 
 ---
-# ============================================
 # PERFIL: PRODUCCIÓN
-# ============================================
 spring:
   config:
     activate:
       on-profile: prod
-
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
@@ -278,7 +243,6 @@ spring:
     hikari:
       maximum-pool-size: 20
       minimum-idle: 10
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -287,16 +251,13 @@ spring:
       hibernate:
         format_sql: false
         generate_statistics: false
-
 logging:
   level:
     root: WARN
     com.reservas.deportivas: INFO
     org.springframework.security: WARN
-
 server:
   port: ${PORT:8080}
-
 app:
   payment:
     test-mode: false

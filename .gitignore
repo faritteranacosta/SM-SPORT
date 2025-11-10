@@ -1,35 +1,53 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# ============================================
+# INTELLIJ IDEA
+# ============================================
+.idea/
 *.iws
 *.iml
 *.ipr
-*.properties
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
+out/
+.idea_modules/
 *.sql
+HELP.md
+
+# ============================================
+# ARCHIVOS DE COMPILACIÓN
+# ============================================
+target/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!mvnw
+!mvnw.cmd
+
+# ============================================
+# LOGS
+# ============================================
+*.log
+logs/
+
+# ============================================
+# ARCHIVOS TEMPORALES
+# ============================================
+*.tmp
+*.temp
+
+# ============================================
+# SISTEMA OPERATIVO
+# ============================================
+.DS_Store
+Thumbs.db
+
+# ============================================
+# ARCHIVOS DE CONFIGURACIÓN SENSIBLES
+# ============================================
+application-dev.properties
+application.properties
+application-prod.properties
+*.keystore
+*.jks
+
+# ============================================
+# MAVEN (si usas Maven)
+# ============================================
+**/maven-wrapper/*
+!.mvn/wrapper/maven-wrapper.jar

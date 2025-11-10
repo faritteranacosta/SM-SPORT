@@ -1,6 +1,7 @@
 # ============================================
 # INTELLIJ IDEA
 # ============================================
+.env
 .idea/
 *.iws
 *.iml
@@ -45,6 +46,7 @@ application.properties
 application-prod.properties
 *.keystore
 *.jks
+
 
 # ============================================
 # MAVEN (si usas Maven)

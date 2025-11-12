@@ -1,170 +1,64 @@
 # SM-SPORT
 
 ```mermaid
-graph TB
-    subgraph "Capa de Presentación"
-        AC[AuthController]
-        CC[ClienteController]
-        PC[ProveedorController]
-        SC[ServicioController]
-        RC[ReservaController]
-        ADC[AdminController]
-    end
+flowchart TB
+ subgraph subGraph0["Capa de Presentación"]
+        CTRL["Controllers<br>Auth, Cliente, Proveedor,<br>Servicio, Reserva, Admin"]
+  end
+ subgraph subGraph1["Capa de Seguridad"]
+        SEC["Security<br>JWT Filter + Token Provider<br>UserDetailsService"]
+  end
+ subgraph subGraph2["Capa de Servicio"]
+        SERV["Services<br>Lógica de Negocio<br>Usuario, Servicio, Reserva, Pago"]
+  end
+ subgraph subGraph3["Capa de Persistencia"]
+        REPO["Repositories<br>Acceso a Datos<br>Spring Data JPA"]
+  end
+ subgraph subGraph4["Capa de Dominio"]
+        ENT["Entities<br>Usuario, Cliente, Proveedor,<br>Servicio, Reserva, Pago"]
+  end
+ subgraph subGraph5["DTOs y Mappers"]
+        DTO["DTOs<br>Request/Response"]
+        MAP["Mappers<br>Entity ↔ DTO<br>MapStruct"]
+  end
+ subgraph subGraph6["Manejo de Errores"]
+        EXC["Exception Handlers<br>Global + Custom Exceptions"]
+  end
+ subgraph subGraph7["Base de Datos"]
+        DB[("Database<br>PostgreSQL")]
+  end
 
-    subgraph "Capa de Seguridad"
-        JTF[JwtAuthenticationFilter]
-        JTP[JwtTokenProvider]
-        CUDS[CustomUserDetailsService]
-        SECCONF[SecurityConfig]
-    end
+    %% Flujo principal
+    CTRL -- "1. Request" --> SEC
+    SEC -- "2. Valida JWT" --> CTRL
+    CTRL -- "3. Usa" --> DTO
+    DTO -- "4. Convierte con" --> MAP
+    MAP -- "5. Envía Entity" --> SERV
+    SERV -- "6. Llama" --> REPO
+    REPO -- "7. Opera" --> ENT
+    ENT -- "8. Persiste" --> DB
 
-    subgraph "Capa de Servicio"
-        US[UsuarioService]
-        SS[ServicioService]
-        RS[ReservaService]
-        PS[PagoService]
-    end
+    %% Flujo de respuesta
+    DB --> ENT
+    ENT --> MAP
+    MAP --> DTO
+    DTO --> CTRL
 
-    subgraph "Implementaciones"
-        USI[UsuarioServiceImpl]
-        SSI[ServicioServiceImpl]
-        RSI[ReservaServiceImpl]
-        PSI[PagoServiceImpl]
-    end
+    %% Manejo de errores
+    SERV -. Errores .-> EXC
+    CTRL -. Errores .-> EXC
 
-    subgraph "Capa de Persistencia"
-        UR[UsuarioRepository]
-        CR[ClienteRepository]
-        SR[ServicioRepository]
-        RR[ReservaRepository]
-        PR[PagoRepository]
-    end
+    %% Estilos
+    style CTRL fill:#4A90E2,color:#fff
+    style SEC fill:#E94B3C,color:#fff
+    style SERV fill:#50C878,color:#fff
+    style REPO fill:#F39C12,color:#fff
+    style ENT fill:#9B59B6,color:#fff
+    style DTO fill:#1ABC9C,color:#fff
+    style MAP fill:#16A085,color:#fff
+    style EXC fill:#E74C3C,color:#fff
+    style DB fill:#34495E,color:#fff
 
-    subgraph "Capa de Dominio"
-        Usuario[Usuario]
-        Cliente[Cliente]
-        Proveedor[Proveedor]
-        Servicio[Servicio]
-        Reserva[Reserva]
-        Pago[Pago]
-    end
-
-    subgraph "DTOs"
-        ReqDTO[Request DTOs]
-        ResDTO[Response DTOs]
-    end
-
-    subgraph "Mappers"
-        UM[UsuarioMapper]
-        SM[ServicioMapper]
-        RM[ReservaMapper]
-    end
-
-    subgraph "Manejo de Excepciones"
-        GEH[GlobalExceptionHandler]
-        RNF[ResourceNotFoundException]
-        BE[BusinessException]
-        UE[UnauthorizedException]
-    end
-
-    subgraph "Utilidades"
-        DU[DateUtil]
-        VU[ValidationUtil]
-    end
-
-    subgraph "Base de Datos"
-        DB[(PostgreSQL/MySQL)]
-    end
-
-    AC --> JTF
-    CC --> JTF
-    PC --> JTF
-    SC --> JTF
-    RC --> JTF
-    ADC --> JTF
-
-    JTF --> JTP
-    JTF --> CUDS
-    SECCONF --> JTP
-
-    AC --> ReqDTO
-    CC --> ReqDTO
-    PC --> ReqDTO
-    SC --> ReqDTO
-    RC --> ReqDTO
-
-    AC --> US
-    CC --> SS
-    PC --> SS
-    SC --> SS
-    RC --> RS
-    ADC --> US
-
-    US --> USI
-    SS --> SSI
-    RS --> RSI
-    PS --> PSI
-
-    USI --> UR
-    SSI --> SR
-    RSI --> RR
-    PSI --> PR
-
-    UR --> Usuario
-    CR --> Cliente
-    SR --> Servicio
-    RR --> Reserva
-    PR --> Pago
-
-    Usuario --> DB
-    Cliente --> DB
-    Servicio --> DB
-    Reserva --> DB
-    Pago --> DB
-
-    USI --> UM
-    SSI --> SM
-    RSI --> RM
-
-    UM --> ResDTO
-    SM --> ResDTO
-    RM --> ResDTO
-
-    USI --> VU
-    RSI --> DU
-
-    AC -.-> GEH
-    CC -.-> GEH
-    PC -.-> GEH
-    SC -.-> GEH
-    RC -.-> GEH
-
-    GEH --> RNF
-    GEH --> BE
-    GEH --> UE
-
-    style AC fill:#4A90E2
-    style CC fill:#4A90E2
-    style PC fill:#4A90E2
-    style SC fill:#4A90E2
-    style RC fill:#4A90E2
-    style ADC fill:#4A90E2
-    
-    style JTF fill:#E94B3C
-    style JTP fill:#E94B3C
-    style SECCONF fill:#E94B3C
-    
-    style US fill:#50C878
-    style SS fill:#50C878
-    style RS fill:#50C878
-    style PS fill:#50C878
-    
-    style UR fill:#F39C12
-    style CR fill:#F39C12
-    style SR fill:#F39C12
-    style RR fill:#F39C12
-    
-    style DB fill:#34495E
 ```
 
 ```text
@@ -231,10 +125,8 @@ src/main/java/com/sm_sport/
 │   ├── JwtTokenProvider.java
 │   ├── JwtAuthenticationFilter.java
 │   └── CustomUserDetailsService.java
-├── mapper/
-│   ├── UsuarioMapper.java
-│   ├── ServicioMapper.java
-│   └── ... (mappers con MapStruct)
-└── util/
-    ├── DateUtil.java
-    └── ValidationUtil.java
+└── mapper/
+    ├── UsuarioMapper.java
+    ├── ServicioMapper.java
+    └── ... (mappers con MapStruct)
+

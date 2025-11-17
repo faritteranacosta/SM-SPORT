@@ -19,7 +19,7 @@ import com.sm_sport.repository.ClienteRepository;
 import com.sm_sport.repository.DisponibilidadServicioRepository;
 import com.sm_sport.repository.ReservaRepository;
 import com.sm_sport.repository.ServicioRepository;
-import com.sm_sport.service.NotificacionService;
+//import com.sm_sport.service.NotificacionService;
 import com.sm_sport.service.ReservaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class ReservaServiceImpl implements ReservaService {
     private final DisponibilidadServicioRepository disponibilidadRepository;
     private final ReservaMapper reservaMapper;
     private final PageMapper pageMapper;
-    private final NotificacionService notificacionService;
+    //private final NotificacionService notificacionService;
 
     @Override
     public ReservaResponse crearReserva(String idCliente, CrearReservaRequest request) {
@@ -97,12 +97,12 @@ public class ReservaServiceImpl implements ReservaService {
         }
 
         // Notificar al proveedor
-        notificacionService.enviarNotificacion(
-                servicio.getProveedor().getIdUsuario(),
-                "RESERVA",
-                "Nueva reserva recibida",
-                String.format("Has recibido una nueva reserva para %s", servicio.getNombre())
-        );
+//        notificacionService.enviarNotificacion(
+//                servicio.getProveedor().getIdUsuario(),
+//                "RESERVA",
+//                "Nueva reserva recibida",
+//                String.format("Has recibido una nueva reserva para %s", servicio.getNombre())
+//        );
 
         log.info("Reserva creada exitosamente: {}", reserva.getIdReserva());
 
@@ -186,12 +186,12 @@ public class ReservaServiceImpl implements ReservaService {
         reserva = reservaRepository.save(reserva);
 
         // Notificar al cliente
-        notificacionService.enviarNotificacion(
-                reserva.getCliente().getIdUsuario(),
-                "RESERVA",
-                "Reserva confirmada",
-                "Tu reserva ha sido confirmada por el proveedor"
-        );
+//        notificacionService.enviarNotificacion(
+//                reserva.getCliente().getIdUsuario(),
+//                "RESERVA",
+//                "Reserva confirmada",
+//                "Tu reserva ha sido confirmada por el proveedor"
+//        );
 
         log.info("Reserva confirmada exitosamente: {}", idReserva);
 
@@ -217,12 +217,12 @@ public class ReservaServiceImpl implements ReservaService {
         // TODO: Implementar lógica de restauración de cupos
 
         // Notificar al cliente
-        notificacionService.enviarNotificacion(
-                reserva.getCliente().getIdUsuario(),
-                "CANCELACION",
-                "Reserva rechazada",
-                String.format("Tu reserva ha sido rechazada. Motivo: %s", motivo)
-        );
+//        notificacionService.enviarNotificacion(
+//                reserva.getCliente().getIdUsuario(),
+//                "CANCELACION",
+//                "Reserva rechazada",
+//                String.format("Tu reserva ha sido rechazada. Motivo: %s", motivo)
+//        );
 
         return reservaMapper.toResponse(reserva);
     }
@@ -249,12 +249,12 @@ public class ReservaServiceImpl implements ReservaService {
         reservaRepository.save(reserva);
 
         // Notificar al proveedor
-        notificacionService.enviarNotificacion(
-                reserva.getProveedor().getIdUsuario(),
-                "CANCELACION",
-                "Reserva cancelada",
-                String.format("El cliente ha cancelado una reserva. Motivo: %s", request.getMotivoCancelacion())
-        );
+//        notificacionService.enviarNotificacion(
+//                reserva.getProveedor().getIdUsuario(),
+//                "CANCELACION",
+//                "Reserva cancelada",
+//                String.format("El cliente ha cancelado una reserva. Motivo: %s", request.getMotivoCancelacion())
+//        );
 
         log.info("Reserva cancelada exitosamente: {}", idReserva);
 
@@ -276,12 +276,12 @@ public class ReservaServiceImpl implements ReservaService {
         proveedor.setTotalReservasCompletadas(proveedor.getTotalReservasCompletadas() + 1);
 
         // Notificar al cliente para que pueda calificar
-        notificacionService.enviarNotificacion(
-                reserva.getCliente().getIdUsuario(),
-                "RESERVA",
-                "Reserva finalizada",
-                "Tu reserva ha finalizado. ¡Califica el servicio!"
-        );
+//        notificacionService.enviarNotificacion(
+//                reserva.getCliente().getIdUsuario(),
+//                "RESERVA",
+//                "Reserva finalizada",
+//                "Tu reserva ha finalizado. ¡Califica el servicio!"
+//        );
 
         return reservaMapper.toResponse(reserva);
     }
@@ -309,12 +309,12 @@ public class ReservaServiceImpl implements ReservaService {
             reserva.setEstado(EstadoReserva.CANCELADA);
 
             // Notificar al cliente
-            notificacionService.enviarNotificacion(
-                    reserva.getCliente().getIdUsuario(),
-                    "CANCELACION",
-                    "Reserva cancelada por expiración",
-                    "Tu reserva ha sido cancelada automáticamente por falta de pago"
-            );
+//            notificacionService.enviarNotificacion(
+//                    reserva.getCliente().getIdUsuario(),
+//                    "CANCELACION",
+//                    "Reserva cancelada por expiración",
+//                    "Tu reserva ha sido cancelada automáticamente por falta de pago"
+//            );
         });
 
         reservaRepository.saveAll(reservasExpiradas);

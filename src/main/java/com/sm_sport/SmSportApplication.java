@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.sm_sport.repository")
 @EnableAsync // Para tareas asíncronas
 @EnableScheduling // Para tareas programadas
 @EnableConfigurationProperties

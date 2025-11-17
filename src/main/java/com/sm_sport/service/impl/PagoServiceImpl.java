@@ -18,7 +18,7 @@ import com.sm_sport.repository.ClienteRepository;
 import com.sm_sport.repository.ComprobanteRepository;
 import com.sm_sport.repository.PagoRepository;
 import com.sm_sport.repository.ReservaRepository;
-import com.sm_sport.service.NotificacionService;
+//import com.sm_sport.service.NotificacionService;
 import com.sm_sport.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class PagoServiceImpl implements PagoService {
     private final ClienteRepository clienteRepository;
     private final ComprobanteRepository comprobanteRepository;
     private final PagoMapper pagoMapper;
-    private final NotificacionService notificacionService;
+   // private final NotificacionService notificacionService;
 
     @Override
     public PagoResponse procesarPago(String idCliente, PagoRequest request) {
@@ -100,20 +100,20 @@ public class PagoServiceImpl implements PagoService {
                 generarComprobanteAutomatico(pago);
 
                 // Notificar al cliente
-                notificacionService.enviarNotificacion(
-                        idCliente,
-                        "PAGO",
-                        "Pago aprobado",
-                        "Tu pago ha sido procesado exitosamente"
-                );
+//                notificacionService.enviarNotificacion(
+//                        idCliente,
+//                        "PAGO",
+//                        "Pago aprobado",
+//                        "Tu pago ha sido procesado exitosamente"
+//                );
 
                 // Notificar al proveedor
-                notificacionService.enviarNotificacion(
-                        reserva.getProveedor().getIdUsuario(),
-                        "PAGO",
-                        "Nuevo pago recibido",
-                        "Has recibido un pago por una reserva"
-                );
+//                notificacionService.enviarNotificacion(
+//                        reserva.getProveedor().getIdUsuario(),
+//                        "PAGO",
+//                        "Nuevo pago recibido",
+//                        "Has recibido un pago por una reserva"
+//                );
 
                 log.info("Pago procesado exitosamente: {}", pago.getIdPago());
             } else {
@@ -214,13 +214,13 @@ public class PagoServiceImpl implements PagoService {
                 pago.setEstadoPago(EstadoPago.REEMBOLSADO);
                 pagoRepository.save(pago);
 
-                // Notificar al cliente
-                notificacionService.enviarNotificacion(
-                        pago.getCliente().getIdUsuario(),
-                        "PAGO",
-                        "Reembolso procesado",
-                        "Tu reembolso ha sido procesado exitosamente"
-                );
+//                // Notificar al cliente
+//                notificacionService.enviarNotificacion(
+//                        pago.getCliente().getIdUsuario(),
+//                        "PAGO",
+//                        "Reembolso procesado",
+//                        "Tu reembolso ha sido procesado exitosamente"
+//                );
 
                 log.info("Reembolso procesado exitosamente");
 

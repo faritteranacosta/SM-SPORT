@@ -47,4 +47,6 @@ public interface DenunciaRepository extends JpaRepository<Denuncia, String> {
     // Estadísticas
     @Query("SELECT d.tipoDenuncia, COUNT(d) FROM Denuncia d GROUP BY d.tipoDenuncia")
     List<Object[]> contarDenunciasPorTipo();
+
+    Long countByEstado(EstadoDenuncia estado);
 }

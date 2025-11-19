@@ -45,4 +45,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String>,
     // Estadísticas
     @Query("SELECT u.rol, COUNT(u) FROM Usuario u GROUP BY u.rol")
     List<Object[]> contarUsuariosPorRol();
+
+    Long countByRol(Rol rol);
+
+    Long countByActivo(boolean b);
 }

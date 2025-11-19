@@ -53,3 +53,26 @@ application-prod.properties
 # ============================================
 **/maven-wrapper/*
 !.mvn/wrapper/maven-wrapper.jar
+
+# Variables de entorno - NO SUBIR (contiene contraseñas)
+.env
+.env.local
+.env.*.local
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db

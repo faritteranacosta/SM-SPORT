@@ -29,4 +29,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, String> {
     // Estadísticas
     @Query("SELECT COUNT(c) FROM Cliente c JOIN c.historialReservas r WHERE r.estado = 'FINALIZADA'")
     Long contarClientesConReservas();
+
+
 }

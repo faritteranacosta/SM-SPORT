@@ -57,4 +57,7 @@ public interface NotificacionService {
      * @return Cantidad de notificaciones eliminadas
      */
     Integer eliminarNotificacionesAntiguas(Integer diasAntiguedad);
+
+    void notificarSistema(String idUsuario, String solicitudDeReembolsoRechazada, String format);
+
 }

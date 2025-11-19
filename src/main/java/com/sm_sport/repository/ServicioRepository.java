@@ -91,4 +91,6 @@ public interface ServicioRepository extends JpaRepository<Servicio, String> {
 
     @Query("SELECT s.deporte, COUNT(s) FROM Servicio s WHERE s.estado = 'PUBLICADO' GROUP BY s.deporte")
     List<Object[]> contarServiciosPorDeporte();
+
+    Long countByEstado(EstadoServicio estado);
 }

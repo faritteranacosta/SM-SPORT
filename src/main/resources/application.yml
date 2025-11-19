@@ -13,6 +13,23 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
+  # Configuración de Email
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 server:
   port: 8080
 
@@ -20,3 +37,13 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:3600000}   # 1 hora por defecto
 
+# Configuración personalizada de la aplicación
+app:
+  name: "SM Sport"
+  email:
+    from: ${MAIL_FROM:noreply@smsport.com}
+    from-name: "SM Sport - Santa Marta"
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:3000}
+    password-reset-path: "/reset-password"
+    verify-email-path: "/verify-email"

@@ -116,7 +116,6 @@ public class ReporteServiceImpl implements ReporteService {
         EstadisticasResponse estadisticas = EstadisticasResponse.builder()
                 // Estadísticas de usuarios
                 .totalUsuarios(usuarioRepository.count())
-                .usuariosActivos(usuarioRepository.countByActivo(true))
                 .totalClientes(usuarioRepository.countByRol(Rol.CLIENTE))
                 .totalProveedores(usuarioRepository.countByRol(Rol.PROVEEDOR))
                 .usuariosPorRol(calcularUsuariosPorRol())

@@ -192,7 +192,6 @@ class ReporteServiceTest {
 
         // 1. Usuarios
         when(usuarioRepository.count()).thenReturn(100L);
-        when(usuarioRepository.countByActivo(true)).thenReturn(90L);
         when(usuarioRepository.countByRol(Rol.CLIENTE)).thenReturn(80L);
         when(usuarioRepository.countByRol(Rol.PROVEEDOR)).thenReturn(20L);
         when(usuarioRepository.countByRol(Rol.ADMINISTRADOR)).thenReturn(5L);

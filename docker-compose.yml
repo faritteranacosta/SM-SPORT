@@ -22,7 +22,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/sm_sport
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: admin
-      JWT_SECRET: dev_secret_local
+      JWT_SECRET: qvN8s4oVjKjV3pK8XnNQqfT2bSvq4Urz7o9iDg1m6vE=
       JWT_EXPIRATION: 3600000
 
     ports:

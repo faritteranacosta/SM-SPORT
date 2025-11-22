@@ -124,7 +124,7 @@ public class SecurityConfig {
 
         // Orígenes permitidos
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000"  // React
+                "http://localhost:5173"  // React
         ));
 
         // Métodos HTTP permitidos

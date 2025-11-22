@@ -2,6 +2,8 @@ package com.sm_sport.service;
 
 import com.sm_sport.dto.response.MessageResponse;
 import com.sm_sport.dto.response.NotificacionResponse;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

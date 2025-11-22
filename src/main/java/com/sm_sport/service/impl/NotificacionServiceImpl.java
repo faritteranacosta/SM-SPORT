@@ -11,6 +11,7 @@ import com.sm_sport.repository.UsuarioRepository;
 import com.sm_sport.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -164,25 +165,16 @@ public class NotificacionServiceImpl implements NotificacionService {
 
     @Override
     @Transactional
-    @Scheduled(cron = "0 0 3 * * *") // Ejecuta diariamente a las 3:00 AM
     public Integer eliminarNotificacionesAntiguas(Integer diasAntiguedad) {
-        log.info("Iniciando limpieza de notificaciones antiguas (más de {} días)", diasAntiguedad);
+        log.info("Eliminando notificaciones con más de {} días", diasAntiguedad);
 
         try {
-            // Calcular fecha límite
             LocalDateTime fechaLimite = LocalDateTime.now().minusDays(diasAntiguedad);
-
-            // Contar notificaciones a eliminar (para logging)
-            Long total = notificacionRepository.count();
-
-            // Eliminar notificaciones antiguas y leídas
+            long total = notificacionRepository.count();
             notificacionRepository.eliminarNotificacionesAntiguas(fechaLimite);
 
-            Long eliminadas = total - notificacionRepository.count();
-
-            log.info("Se eliminaron {} notificaciones antiguas", eliminadas);
-
-            return eliminadas.intValue();
+            long eliminadas = total - notificacionRepository.count();
+            return (int) eliminadas;
 
         } catch (Exception e) {
             log.error("Error al eliminar notificaciones antiguas: {}", e.getMessage());

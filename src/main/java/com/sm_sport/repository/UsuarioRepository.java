@@ -48,5 +48,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String>,
 
     Long countByRol(Rol rol);
 
-    Long countByActivo(boolean b);
 }

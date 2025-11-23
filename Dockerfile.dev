@@ -1,0 +1,18 @@
+# Dockerfile para desarrollo con hot-reload
+FROM maven:3.9.4-eclipse-temurin-21
+
+WORKDIR /app
+
+# Copiar archivos de configuración
+COPY pom.xml .
+RUN mvn -q dependency:go-offline
+
+# Copiar código fuente
+COPY src ./src
+
+# Exponer puerto
+EXPOSE 8080
+
+# Comando para desarrollo (compila y ejecuta con hot-reload)
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
+

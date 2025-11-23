@@ -7,6 +7,8 @@ import com.sm_sport.dto.response.MessageResponse;
 import com.sm_sport.dto.response.PageResponse;
 import com.sm_sport.dto.response.ReservaDetalleResponse;
 import com.sm_sport.dto.response.ReservaResponse;
+import com.sm_sport.exception.ResourceNotFoundException;
+import com.sm_sport.repository.ClienteRepository;
 import com.sm_sport.service.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservaController {
 
     private final ReservaService reservaService;
+    private final ClienteRepository clienteRepository;
 
     /**
      * Crea una nueva reserva para un servicio
@@ -84,7 +87,7 @@ public class ReservaController {
             @Parameter(description = "Datos de la reserva: ID del servicio, fecha, hora y notas opcionales", required = true)
             @Valid @RequestBody CrearReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("POST /api/v1/reservas - Cliente: {} - Servicio: {} - Fecha: {}",
                 idCliente, request.getIdServicio(), request.getFechaReserva());
 
@@ -419,7 +422,7 @@ public class ReservaController {
             @Parameter(description = "Motivo de la cancelación", required = true)
             @Valid @RequestBody CancelarReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("DELETE /api/v1/reservas/{} - Cliente: {} - Motivo: {}",
                 id, idCliente, request.getMotivoCancelacion());
 
@@ -552,7 +555,7 @@ public class ReservaController {
             @Parameter(description = "Datos de la reserva a verificar", required = true)
             @Valid @RequestBody CrearReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("POST /api/v1/reservas/verificar-disponibilidad - Cliente: {} - Servicio: {}",
                 idCliente, request.getIdServicio());
 
@@ -578,7 +581,16 @@ public class ReservaController {
      */
     private String obtenerIdUsuarioAutenticado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        return authentication.getName(); // Esto retorna el email
+    }
+
+    /**
+     * Obtiene el ID del cliente autenticado buscando por email
+     */
+    private String obtenerIdClienteAutenticado() {
+        String email = obtenerIdUsuarioAutenticado();
+        return clienteRepository.findIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con email: " + email));
     }
 
     /**

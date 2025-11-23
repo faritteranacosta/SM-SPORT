@@ -5,6 +5,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import ProviderServices from './components/ProviderServices';
+import Reservas from './components/Reservas';
+import Servicios from './components/Servicios';
 import './App.css';
 
 // Configuración de axios para incluir el token en las peticiones
@@ -80,7 +82,39 @@ function App() {
           path="/mis-servicios"
           element={
             isAuthenticated ? (
-              <ProviderServices />
+              (() => {
+                // Validar que el usuario sea PROVEEDOR
+                try {
+                  const user = JSON.parse(localStorage.getItem('user') || '{}');
+                  if (user.rol === 'PROVEEDOR') {
+                    return <ProviderServices />;
+                  } else {
+                    return <Navigate to="/dashboard" />;
+                  }
+                } catch {
+                  return <Navigate to="/login" />;
+                }
+              })()
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/reservas"
+          element={
+            isAuthenticated ? (
+              <Reservas />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/servicios"
+          element={
+            isAuthenticated ? (
+              <Servicios />
             ) : (
               <Navigate to="/login" />
             )

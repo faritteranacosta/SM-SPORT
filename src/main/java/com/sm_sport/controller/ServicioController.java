@@ -88,7 +88,7 @@ public class ServicioController {
             @Parameter(description = "Datos del servicio: nombre, deporte, precio, ubicación y disponibilidad", required = true)
             @Valid @RequestBody CrearServicioRequest request) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = request.getIdUsuario();
         log.info("POST /api/v1/servicios - Proveedor: {} - Servicio: {}",
                 idProveedor, request.getNombre());
 

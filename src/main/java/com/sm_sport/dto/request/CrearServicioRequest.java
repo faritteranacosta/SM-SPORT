@@ -16,6 +16,9 @@ import java.util.List;
 @Builder
 public class CrearServicioRequest {
 
+    @NotBlank(message = "El ID del usuario es obligatorio")
+    private String idUsuario;
+
     @NotBlank(message = "El nombre del servicio es obligatorio")
     @Size(min = 5, max = 150, message = "El nombre debe tener entre 5 y 150 caracteres")
     private String nombre;

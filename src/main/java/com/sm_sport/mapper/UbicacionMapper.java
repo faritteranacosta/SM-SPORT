@@ -2,6 +2,7 @@ package com.sm_sport.mapper;
 
 import com.sm_sport.dto.request.UbicacionRequest;
 import com.sm_sport.dto.response.UbicacionResponse;
+import com.sm_sport.model.entity.Servicio;
 import com.sm_sport.model.entity.UbicacionServicio;
 import org.mapstruct.*;
 

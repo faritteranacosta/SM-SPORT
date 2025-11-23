@@ -71,25 +71,15 @@ public class ServicioServiceImpl implements ServicioService {
         servicio.setProveedor(proveedor);
         servicio.setEstado(EstadoServicio.PUBLICADO);
 
-        // Guardar servicio
-        servicio = servicioRepository.save(servicio);
-
-        // Crear ubicación
+        // Crear y asociar ubicación
         if (request.getUbicacion() != null) {
             UbicacionServicio ubicacion = ubicacionMapper.toEntity(request.getUbicacion());
             ubicacion.setServicio(servicio);
-            ubicacionRepository.save(ubicacion);
+            servicio.setUbicacion(ubicacion);
         }
 
-        // Crear disponibilidades
-        if (request.getDisponibilidad() != null && !request.getDisponibilidad().isEmpty()) {
-            List<DisponibilidadServicio> disponibilidades =
-                    disponibilidadMapper.toEntityList(request.getDisponibilidad());
-
-            Servicio finalServicio = servicio;
-            disponibilidades.forEach(d -> d.setServicio(finalServicio));
-            disponibilidadRepository.saveAll(disponibilidades);
-        }
+        // Guardar servicio (con cascade guardará ubicación)
+        servicio = servicioRepository.save(servicio);
 
         // Actualizar contador del proveedor
         proveedor.setTotalServiciosPublicados(proveedor.getTotalServiciosPublicados() + 1);

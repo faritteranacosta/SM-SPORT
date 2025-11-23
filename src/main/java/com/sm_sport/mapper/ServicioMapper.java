@@ -44,6 +44,7 @@ public interface ServicioMapper {
     @Mapping(target = "totalResenas", constant = "0")
     @Mapping(target = "reservas", ignore = true)
     @Mapping(target = "resenas", ignore = true)
+    @Mapping(target = "ubicacion", ignore = true)
     Servicio toEntity(CrearServicioRequest request);
 
     // Actualizar servicio

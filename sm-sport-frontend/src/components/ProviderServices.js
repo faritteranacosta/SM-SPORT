@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AlertCircle, MapPin, Calendar, Plus, Trash2, DollarSign, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ProviderReservas from './ProviderReservas';
 
 const ProviderServices = () => {
   const navigate = useNavigate();
   const [proveedorUuid, setProveedorUuid] = useState(null);
+  const [activeTab, setActiveTab] = useState('servicios');
   
   const [formData, setFormData] = useState({
     nombre: '',
@@ -32,21 +34,25 @@ const ProviderServices = () => {
     'Boxeo', 'Yoga', 'CrossFit', 'Ciclismo', 'Running'
   ];
 
-  // Obtener el ID del usuario desde localStorage
   useEffect(() => {
     const obtenerUsuarioDesdeStorage = () => {
       try {
         const storedUser = localStorage.getItem('user');
+        console.log("DEBUG: Usuario en localStorage:", storedUser);
+        
         if (!storedUser) {
           setErrors({ submit: 'No se encontraron datos de usuario. Inicia sesión nuevamente.' });
           return;
         }
 
         const userData = JSON.parse(storedUser);
+        console.log("DEBUG: Usuario parseado:", userData);
+        
         const uuid = userData.idUsuario;
         
         if (uuid) {
           setProveedorUuid(uuid);
+          console.log("DEBUG: UUID del proveedor:", uuid);
         } else {
           setErrors({ submit: 'No se pudo obtener el ID del usuario. Inicia sesión nuevamente.' });
         }
@@ -91,7 +97,6 @@ const ProviderServices = () => {
     setErrors({});
     setSuccessMessage('');
   
-    // Validar que el usuario sea PROVEEDOR
     let userRole = null;
     try {
       const storedUser = localStorage.getItem('user');
@@ -120,10 +125,8 @@ const ProviderServices = () => {
     setLoading(true);
   
     try {
-      console.log('🔍 === PUBLICANDO SERVICIO (SIN DISPONIBILIDAD INICIAL) ===');
-      console.log('Proveedor UUID:', proveedorUuid);
+      console.log('Publicando servicio para proveedor:', proveedorUuid);
   
-      // Validar y convertir coordenadas
       const lat = parseFloat(formData.ubicacion.latitud);
       const lng = parseFloat(formData.ubicacion.longitud);
       
@@ -133,15 +136,12 @@ const ProviderServices = () => {
         return;
       }
 
-      // Validar que las coordenadas estén en rangos válidos
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         setErrors({ submit: 'Las coordenadas están fuera de rango válido' });
         setLoading(false);
         return;
       }
   
-      // PASO 1: Crear el servicio SIN disponibilidad
-      // Asegurarse de que todos los campos de ubicación estén presentes y no sean vacíos
       const ubicacionPayload = {
         direccion: formData.ubicacion.direccion.trim(),
         ciudad: formData.ubicacion.ciudad.trim(),
@@ -151,7 +151,6 @@ const ProviderServices = () => {
         coordenadasLng: lng
       };
 
-      // Validar que ningún campo de ubicación esté vacío
       if (!ubicacionPayload.direccion || !ubicacionPayload.ciudad || 
           !ubicacionPayload.departamento || !ubicacionPayload.pais) {
         setErrors({ submit: 'Todos los campos de ubicación son obligatorios' });
@@ -166,13 +165,9 @@ const ProviderServices = () => {
         descripcion: formData.descripcion?.trim() || null,
         precio: parseFloat(formData.precio),
         ubicacion: ubicacionPayload,
-        // ← NO enviar disponibilidad aquí
         disponibilidad: []
       };
   
-      console.log('📤 Payload servicio (paso 1):', JSON.stringify(payload, null, 2));
-  
-      // Asegurar que el Content-Type sea application/json
       const response = await axios.post('/api/v1/servicios', payload, {
         headers: {
           'Content-Type': 'application/json'
@@ -180,12 +175,7 @@ const ProviderServices = () => {
       });
       const servicioCreado = response.data;
   
-      console.log('✅ Servicio creado:', servicioCreado);
-  
-      // PASO 2: Si hay disponibilidad, agregarla después
       if (formData.disponibilidad && formData.disponibilidad.length > 0) {
-        console.log('📅 Agregando disponibilidad al servicio...');
-  
         const disponibilidadPayload = formData.disponibilidad
           .filter((d) => d.fecha && d.horaInicio && d.horaFin)
           .map((d) => ({
@@ -196,25 +186,20 @@ const ProviderServices = () => {
           }));
   
         if (disponibilidadPayload.length > 0) {
-          console.log('📤 Payload disponibilidad (paso 2):', JSON.stringify(disponibilidadPayload, null, 2));
-  
           try {
             await axios.post(
               `/api/v1/servicios/${servicioCreado.idServicio}/disponibilidad`,
               disponibilidadPayload
             );
-            console.log('✅ Disponibilidad agregada exitosamente');
+            console.log('Disponibilidad agregada exitosamente');
           } catch (dispError) {
-            console.error('⚠️ Error al agregar disponibilidad:', dispError);
-            // No falla la operación completa si la disponibilidad falla
-            console.warn('El servicio se creó pero no se pudo agregar la disponibilidad');
+            console.error('Error al agregar disponibilidad:', dispError);
           }
         }
       }
   
       setSuccessMessage(`¡Servicio publicado exitosamente con ID: ${servicioCreado.idServicio}!`);
       
-      // Limpiar formulario
       setFormData({
         nombre: '',
         deporte: '',
@@ -234,10 +219,7 @@ const ProviderServices = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
   
     } catch (err) {
-      console.error('❌ === ERROR AL CREAR SERVICIO ===');
-      console.error('Error completo:', err);
-      console.error('Response status:', err.response?.status);
-      console.error('Response data:', err.response?.data);
+      console.error('Error al crear servicio:', err);
       
       let errorMessage = 'Error al crear el servicio. Revisa los datos.';
       
@@ -339,28 +321,97 @@ const ProviderServices = () => {
     }
   };
 
+  if (activeTab === 'reservas') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 className="text-2xl font-bold text-gray-900">Panel de Proveedor</h1>
+              </div>
+            </div>
+
+            <div className="mt-6 border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('servicios')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'servicios'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Mis Servicios
+                </button>
+                <button
+                  onClick={() => setActiveTab('reservas')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'reservas'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Gestión de Reservas
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          <ProviderReservas />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
           <div className="mb-8">
             <button
               onClick={() => navigate('/dashboard')}
               className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <ArrowLeft size={20} />
+              <ArrowLeft className="w-5 h-5" />
               Volver al Dashboard
             </button>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Publicar Nuevo Servicio Deportivo
-            </h1>
-            <p className="text-gray-600">
-              Completa la información de tu servicio para que los clientes puedan encontrarlo
-            </p>
+            
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Publicar Nuevo Servicio</h1>
+            <p className="text-gray-600">Completa el formulario para publicar tu servicio deportivo</p>
+
+            <div className="mt-6 border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('servicios')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'servicios'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Mis Servicios
+                </button>
+                <button
+                  onClick={() => setActiveTab('reservas')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'reservas'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Gestión de Reservas
+                </button>
+              </nav>
+            </div>
           </div>
 
-          {/* Success Message */}
           {successMessage && (
             <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -370,7 +421,6 @@ const ProviderServices = () => {
             </div>
           )}
 
-          {/* Error Message */}
           {errors.submit && (
             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
               <AlertCircle className="text-red-600 flex-shrink-0" size={20} />
@@ -379,7 +429,6 @@ const ProviderServices = () => {
           )}
 
           <div className="space-y-8">
-            {/* Información Básica */}
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b">
                 Información Básica
@@ -466,7 +515,6 @@ const ProviderServices = () => {
               </div>
             </section>
 
-            {/* Ubicación */}
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b flex items-center gap-2">
                 <MapPin size={20} />
@@ -579,7 +627,6 @@ const ProviderServices = () => {
               </div>
             </section>
 
-            {/* Disponibilidad */}
             <section>
               <div className="flex items-center justify-between mb-4 pb-2 border-b">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -592,27 +639,34 @@ const ProviderServices = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Plus size={16} />
-                  Agregar
+                  Agregar Disponibilidad
                 </button>
               </div>
 
               {formData.disponibilidad.length === 0 ? (
-                <p className="text-gray-500 text-sm">
-                  No hay horarios agregados. Puedes agregarlos ahora o después desde la gestión del servicio.
-                </p>
+                <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                  <Calendar className="mx-auto text-gray-400 mb-2" size={40} />
+                  <p className="text-gray-500">Sin disponibilidad configurada</p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Puedes agregar disponibilidad más tarde desde la edición del servicio
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {formData.disponibilidad.map((disp, index) => (
-                    <div key={index} className="bg-gray-50 rounded-lg p-4 relative">
-                      <button
-                        type="button"
-                        onClick={() => eliminarDisponibilidad(index)}
-                        className="absolute top-3 right-3 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-medium text-gray-900">Disponibilidad #{index + 1}</h3>
+                        <button
+                          type="button"
+                          onClick={() => eliminarDisponibilidad(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Fecha
@@ -668,7 +722,6 @@ const ProviderServices = () => {
               )}
             </section>
 
-            {/* Botones */}
             <div className="flex gap-4 pt-6 border-t">
               <button
                 type="button"

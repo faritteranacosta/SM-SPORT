@@ -28,8 +28,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, String> {
     );
 
     // Buscar ID de cliente por email
-    @Query("SELECT c.idCliente FROM Cliente c WHERE c.idCliente IN " +
-           "(SELECT u.idUsuario FROM Usuario u WHERE u.correo = :email)")
+    @Query("SELECT u.idUsuario FROM Usuario u WHERE u.correo = :email")
     Optional<String> findIdByEmail(@Param("email") String email);
 
     // Estadísticas

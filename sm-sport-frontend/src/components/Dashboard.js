@@ -12,6 +12,9 @@ const Dashboard = ({ onLogout }) => {
     // Cargamos los datos básicos del usuario desde localStorage
     try {
       const storedUser = localStorage.getItem('user');
+      const userData = JSON.parse(storedUser || '{}');
+      console.log("DEBUG: Dashboard - userData:", userData);
+      console.log("DEBUG: Dashboard - rol:", userData?.rol);
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         setUserData(parsedUser);
@@ -80,6 +83,14 @@ const Dashboard = ({ onLogout }) => {
                 Gestionar Mis Servicios
               </button>
             )}
+            {/* Botón de debugging - acceso directo */}
+            <button 
+              className="action-button"
+              style={{backgroundColor: '#ff6b6b', color: 'white'}}
+              onClick={() => navigate('/mis-servicios')}
+            >
+              🔧 ACCESO DIRECTO: Mis Servicios (DEBUG)
+            </button>
           </div>
         </div>
       </main>

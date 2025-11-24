@@ -42,6 +42,7 @@ public class ReservaController {
 
     private final ReservaService reservaService;
     private final ClienteRepository clienteRepository;
+    private final com.sm_sport.repository.ProveedorRepository proveedorRepository;
 
     /**
      * Crea una nueva reserva para un servicio
@@ -131,8 +132,14 @@ public class ReservaController {
             @Parameter(description = "Cantidad de elementos por página")
             @RequestParam(defaultValue = "20") Integer tamano) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
         boolean esCliente = esCliente();
+        String idUsuario;
+
+        if (esCliente) {
+            idUsuario = obtenerIdClienteAutenticado();
+        } else {
+            idUsuario = obtenerIdProveedorAutenticado();
+        }
 
         log.info("GET /api/v1/reservas - Usuario: {} - Rol: {} - Página: {}/{}",
                 idUsuario, esCliente ? "CLIENTE" : "PROVEEDOR", pagina, tamano);
@@ -189,7 +196,8 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva", required = true)
             @PathVariable String id) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
+        boolean esCliente = esCliente();
+        String idUsuario = esCliente ? obtenerIdClienteAutenticado() : obtenerIdProveedorAutenticado();
         log.info("GET /api/v1/reservas/{} - Usuario: {}", id, idUsuario);
 
         ReservaResponse reserva = reservaService.obtenerPorId(id);
@@ -248,7 +256,8 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva", required = true)
             @PathVariable String id) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
+        boolean esCliente = esCliente();
+        String idUsuario = esCliente ? obtenerIdClienteAutenticado() : obtenerIdProveedorAutenticado();
         log.info("GET /api/v1/reservas/{}/detalle - Usuario: {}", id, idUsuario);
 
         ReservaDetalleResponse detalle = reservaService.obtenerDetalle(id);
@@ -314,7 +323,7 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva a confirmar", required = true)
             @PathVariable String id) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/confirmar - Proveedor: {}", id, idProveedor);
 
         ReservaResponse reserva = reservaService.confirmarReserva(id, idProveedor);
@@ -365,7 +374,7 @@ public class ReservaController {
             @Parameter(description = "Motivo del rechazo", required = true)
             @RequestParam String motivo) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/rechazar - Proveedor: {} - Motivo: {}",
                 id, idProveedor, motivo);
 
@@ -472,7 +481,7 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva a finalizar", required = true)
             @PathVariable String id) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/finalizar - Proveedor: {}", id, idProveedor);
 
         ReservaResponse reserva = reservaService.finalizarReserva(id);
@@ -591,6 +600,15 @@ public class ReservaController {
         String email = obtenerIdUsuarioAutenticado();
         return clienteRepository.findIdByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con email: " + email));
+    }
+
+    /**
+     * Obtiene el ID del proveedor autenticado buscando por email
+     */
+    private String obtenerIdProveedorAutenticado() {
+        String email = obtenerIdUsuarioAutenticado();
+        return proveedorRepository.findIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado con email: " + email));
     }
 
     /**

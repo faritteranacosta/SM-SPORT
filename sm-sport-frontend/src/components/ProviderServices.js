@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AlertCircle, MapPin, Calendar, Plus, Trash2, DollarSign, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProviderReservas from './ProviderReservas';
 
 const ProviderServices = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [proveedorUuid, setProveedorUuid] = useState(null);
   const [activeTab, setActiveTab] = useState('servicios');
   
@@ -33,6 +34,14 @@ const ProviderServices = () => {
     'Fútbol', 'Baloncesto', 'Tenis', 'Voleibol', 'Natación',
     'Boxeo', 'Yoga', 'CrossFit', 'Ciclismo', 'Running'
   ];
+
+  // Verificar si hay un parámetro tab en la URL al cargar
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'reservas') {
+      setActiveTab('reservas');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const obtenerUsuarioDesdeStorage = () => {
@@ -323,88 +332,231 @@ const ProviderServices = () => {
 
   if (activeTab === 'reservas') {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <h1 className="text-2xl font-bold text-gray-900">Panel de Proveedor</h1>
+      <div style={{ minHeight: '100vh', padding: '2rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            padding: '2rem',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div style={{ marginBottom: '2rem' }}>
+              <button
+                onClick={() => navigate('/dashboard')}
+                style={{
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'white',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Volver al Dashboard
+              </button>
+              
+              <h1 style={{ 
+                fontSize: '2rem', 
+                fontWeight: 'bold', 
+                marginBottom: '0.5rem',
+                color: 'white'
+              }}>Gestión de Reservas</h1>
+              <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Gestiona las reservas realizadas a tus servicios</p>
+
+              <div style={{ 
+                marginTop: '1.5rem', 
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                paddingBottom: '0'
+              }}>
+                <nav style={{ display: 'flex', gap: '2rem' }}>
+                  <button
+                    onClick={() => setActiveTab('servicios')}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderBottom: activeTab === 'servicios' ? '2px solid #FF6B00' : '2px solid transparent',
+                      background: 'transparent',
+                      borderTop: 'none',
+                      borderLeft: 'none',
+                      borderRight: 'none',
+                      color: activeTab === 'servicios' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                      fontWeight: '500',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      if (activeTab !== 'servicios') {
+                        e.target.style.color = 'rgba(255, 255, 255, 0.9)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (activeTab !== 'servicios') {
+                        e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+                      }
+                    }}
+                  >
+                    Mis Servicios
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('reservas')}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderBottom: activeTab === 'reservas' ? '2px solid #FF6B00' : '2px solid transparent',
+                      background: 'transparent',
+                      borderTop: 'none',
+                      borderLeft: 'none',
+                      borderRight: 'none',
+                      color: activeTab === 'reservas' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                      fontWeight: '500',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      if (activeTab !== 'reservas') {
+                        e.target.style.color = 'rgba(255, 255, 255, 0.9)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (activeTab !== 'reservas') {
+                        e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+                      }
+                    }}
+                  >
+                    Gestión de Reservas
+                  </button>
+                </nav>
               </div>
             </div>
 
-            <div className="mt-6 border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
-                <button
-                  onClick={() => setActiveTab('servicios')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'servicios'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Mis Servicios
-                </button>
-                <button
-                  onClick={() => setActiveTab('reservas')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'reservas'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Gestión de Reservas
-                </button>
-              </nav>
-            </div>
+            <ProviderReservas />
           </div>
-
-          <ProviderReservas />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+    <div style={{ minHeight: '100vh', padding: '2rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          padding: '2rem',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+        }}>
           <div className="mb-8">
             <button
               onClick={() => navigate('/dashboard')}
-              className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              style={{
+                marginBottom: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'white',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+              }}
             >
               <ArrowLeft className="w-5 h-5" />
               Volver al Dashboard
             </button>
             
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Publicar Nuevo Servicio</h1>
-            <p className="text-gray-600">Completa el formulario para publicar tu servicio deportivo</p>
+            <h1 style={{ 
+              fontSize: '2rem', 
+              fontWeight: 'bold', 
+              marginBottom: '0.5rem',
+              color: 'white'
+            }}>Publicar Nuevo Servicio</h1>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Completa el formulario para publicar tu servicio deportivo</p>
 
-            <div className="mt-6 border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+            <div style={{ 
+              marginTop: '1.5rem', 
+              borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+              paddingBottom: '0'
+            }}>
+              <nav style={{ display: 'flex', gap: '2rem' }}>
                 <button
                   onClick={() => setActiveTab('servicios')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'servicios'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderBottom: activeTab === 'servicios' ? '2px solid #FF6B00' : '2px solid transparent',
+                    background: 'transparent',
+                    borderTop: 'none',
+                    borderLeft: 'none',
+                    borderRight: 'none',
+                    color: activeTab === 'servicios' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => {
+                    if (activeTab !== 'servicios') {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.9)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (activeTab !== 'servicios') {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+                    }
+                  }}
                 >
                   Mis Servicios
                 </button>
                 <button
                   onClick={() => setActiveTab('reservas')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'reservas'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderBottom: activeTab === 'reservas' ? '2px solid #FF6B00' : '2px solid transparent',
+                    background: 'transparent',
+                    borderTop: 'none',
+                    borderLeft: 'none',
+                    borderRight: 'none',
+                    color: activeTab === 'reservas' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => {
+                    if (activeTab !== 'reservas') {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.9)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (activeTab !== 'reservas') {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+                    }
+                  }}
                 >
                   Gestión de Reservas
                 </button>
@@ -413,30 +565,70 @@ const ProviderServices = () => {
           </div>
 
           {successMessage && (
-            <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-green-600 text-xl">✓</span>
+            <div style={{
+              marginBottom: '1.5rem',
+              background: 'rgba(34, 197, 94, 0.2)',
+              border: '1px solid rgba(34, 197, 94, 0.5)',
+              borderRadius: '8px',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                background: 'rgba(34, 197, 94, 0.3)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <span style={{ color: '#4ade80', fontSize: '20px' }}>✓</span>
               </div>
-              <p className="text-green-800 font-medium">{successMessage}</p>
+              <p style={{ color: '#4ade80', fontWeight: '500' }}>{successMessage}</p>
             </div>
           )}
 
           {errors.submit && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-              <AlertCircle className="text-red-600 flex-shrink-0" size={20} />
-              <p className="text-red-800">{errors.submit}</p>
+            <div style={{
+              marginBottom: '1.5rem',
+              background: 'rgba(220, 53, 69, 0.2)',
+              border: '1px solid rgba(220, 53, 69, 0.5)',
+              borderRadius: '8px',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <AlertCircle className="text-red-400" size={20} style={{ flexShrink: 0 }} />
+              <p style={{ color: '#ff6b6b' }}>{errors.submit}</p>
             </div>
           )}
 
-          <div className="space-y-8">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b">
+              <h2 style={{
+                fontSize: '1.25rem',
+                fontWeight: '600',
+                color: 'white',
+                marginBottom: '1rem',
+                paddingBottom: '0.5rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+              }}>
                 Información Básica
               </h2>
               
-              <div className="space-y-5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Nombre del Servicio *
                   </label>
                   <input
@@ -445,36 +637,85 @@ const ProviderServices = () => {
                     value={formData.nombre}
                     onChange={handleChange}
                     placeholder="Ej: Clases de Fútbol para Principiantes"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     maxLength={150}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                   {errors.nombre && (
-                    <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
+                    <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.nombre}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Deporte *
                   </label>
                   <select
                     name="deporte"
                     value={formData.deporte}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s',
+                      cursor: 'pointer'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
-                    <option value="">Selecciona un deporte</option>
+                    <option value="" style={{ background: '#1a2f5a', color: 'white' }}>Selecciona un deporte</option>
                     {deportes.map(deporte => (
-                      <option key={deporte} value={deporte}>{deporte}</option>
+                      <option key={deporte} value={deporte} style={{ background: '#1a2f5a', color: 'white' }}>{deporte}</option>
                     ))}
                   </select>
                   {errors.deporte && (
-                    <p className="mt-1 text-sm text-red-600">{errors.deporte}</p>
+                    <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.deporte}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Descripción
                   </label>
                   <textarea
@@ -484,19 +725,51 @@ const ProviderServices = () => {
                     placeholder="Describe tu servicio, qué incluye, qué nivel, etc."
                     rows={4}
                     maxLength={1000}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      resize: 'none',
+                      transition: 'all 0.2s',
+                      fontFamily: 'inherit'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p style={{ marginTop: '0.25rem', fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)' }}>
                     {formData.descripcion.length}/1000 caracteres
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Precio (COP) *
                   </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <div style={{ position: 'relative' }}>
+                    <DollarSign style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: 'rgba(255, 255, 255, 0.5)'
+                    }} size={20} />
                     <input
                       type="number"
                       name="precio"
@@ -505,25 +778,62 @@ const ProviderServices = () => {
                       placeholder="0.00"
                       step="0.01"
                       min="0.01"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        paddingLeft: '2.5rem',
+                        paddingRight: '1rem',
+                        paddingTop: '0.75rem',
+                        paddingBottom: '0.75rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
                   {errors.precio && (
-                    <p className="mt-1 text-sm text-red-600">{errors.precio}</p>
+                    <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.precio}</p>
                   )}
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b flex items-center gap-2">
+              <h2 style={{
+                fontSize: '1.25rem',
+                fontWeight: '600',
+                color: 'white',
+                marginBottom: '1rem',
+                paddingBottom: '0.5rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
                 <MapPin size={20} />
                 Ubicación
               </h2>
 
-              <div className="space-y-5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Dirección *
                   </label>
                   <input
@@ -532,16 +842,40 @@ const ProviderServices = () => {
                     value={formData.ubicacion.direccion}
                     onChange={handleChange}
                     placeholder="Ej: Calle 22 #5-20, Rodadero"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                   {errors.direccion && (
-                    <p className="mt-1 text-sm text-red-600">{errors.direccion}</p>
+                    <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.direccion}</p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      marginBottom: '0.5rem'
+                    }}>
                       Ciudad
                     </label>
                     <input
@@ -549,12 +883,36 @@ const ProviderServices = () => {
                       name="ubicacion.ciudad"
                       value={formData.ubicacion.ciudad}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      marginBottom: '0.5rem'
+                    }}>
                       Departamento
                     </label>
                     <input
@@ -562,12 +920,36 @@ const ProviderServices = () => {
                       name="ubicacion.departamento"
                       value={formData.ubicacion.departamento}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      marginBottom: '0.5rem'
+                    }}>
                       País
                     </label>
                     <input
@@ -575,14 +957,38 @@ const ProviderServices = () => {
                       name="ubicacion.pais"
                       value={formData.ubicacion.pais}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      marginBottom: '0.5rem'
+                    }}>
                       Latitud *
                     </label>
                     <input
@@ -592,12 +998,36 @@ const ProviderServices = () => {
                       onChange={handleChange}
                       placeholder="11.0041"
                       step="0.000001"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      marginBottom: '0.5rem'
+                    }}>
                       Longitud *
                     </label>
                     <input
@@ -607,19 +1037,55 @@ const ProviderServices = () => {
                       onChange={handleChange}
                       placeholder="-74.8070"
                       step="0.000001"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid #FF6B00';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
                 </div>
 
                 {errors.coordenadas && (
-                  <p className="text-sm text-red-600">{errors.coordenadas}</p>
+                  <p style={{ fontSize: '14px', color: '#ff6b6b' }}>{errors.coordenadas}</p>
                 )}
 
                 <button
                   type="button"
                   onClick={obtenerUbicacionActual}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-2"
+                  style={{
+                    color: '#FF6B00',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0.5rem 0',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.color = '#ff8533';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.color = '#FF6B00';
+                  }}
                 >
                   <MapPin size={16} />
                   Usar mi ubicación actual
@@ -628,15 +1094,51 @@ const ProviderServices = () => {
             </section>
 
             <section>
-              <div className="flex items-center justify-between mb-4 pb-2 border-b">
-                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '1rem',
+                paddingBottom: '0.5rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+              }}>
+                <h2 style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
                   <Calendar size={20} />
                   Disponibilidad (Opcional)
                 </h2>
                 <button
                   type="button"
                   onClick={agregarDisponibilidad}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '0.5rem 1rem',
+                    background: 'linear-gradient(135deg, #FF6B00 0%, #ff8533 100%)',
+                    color: 'white',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 2px 4px rgba(255, 107, 0, 0.3)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 0, 0.4)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 2px 4px rgba(255, 107, 0, 0.3)';
+                  }}
                 >
                   <Plus size={16} />
                   Agregar Disponibilidad
@@ -644,67 +1146,174 @@ const ProviderServices = () => {
               </div>
 
               {formData.disponibilidad.length === 0 ? (
-                <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                  <Calendar className="mx-auto text-gray-400 mb-2" size={40} />
-                  <p className="text-gray-500">Sin disponibilidad configurada</p>
-                  <p className="text-sm text-gray-400 mt-1">
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem',
+                  border: '2px dashed rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.05)'
+                }}>
+                  <Calendar style={{ margin: '0 auto', color: 'rgba(255, 255, 255, 0.5)', marginBottom: '0.5rem' }} size={40} />
+                  <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.25rem' }}>Sin disponibilidad configurada</p>
+                  <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '0.25rem' }}>
                     Puedes agregar disponibilidad más tarde desde la edición del servicio
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {formData.disponibilidad.map((disp, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-medium text-gray-900">Disponibilidad #{index + 1}</h3>
+                    <div key={index} style={{
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      padding: '1rem',
+                      background: 'rgba(255, 255, 255, 0.05)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: '0.75rem'
+                      }}>
+                        <h3 style={{ fontWeight: '500', color: 'white' }}>Disponibilidad #{index + 1}</h3>
                         <button
                           type="button"
                           onClick={() => eliminarDisponibilidad(index)}
-                          className="text-red-500 hover:text-red-700"
+                          style={{
+                            color: '#ff6b6b',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            transition: 'color 0.2s'
+                          }}
+                          onMouseOver={(e) => {
+                            e.target.style.color = '#ff5252';
+                          }}
+                          onMouseOut={(e) => {
+                            e.target.style.color = '#ff6b6b';
+                          }}
                         >
                           <Trash2 size={16} />
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            marginBottom: '0.25rem'
+                          }}>
                             Fecha
                           </label>
                           <input
                             type="date"
                             value={disp.fecha}
                             onChange={(e) => handleDisponibilidadChange(index, 'fecha', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '8px',
+                              color: 'white',
+                              fontSize: '14px',
+                              outline: 'none',
+                              transition: 'all 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.border = '1px solid #FF6B00';
+                              e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                              e.target.style.boxShadow = 'none';
+                            }}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            marginBottom: '0.25rem'
+                          }}>
                             Hora Inicio
                           </label>
                           <input
                             type="time"
                             value={disp.horaInicio}
                             onChange={(e) => handleDisponibilidadChange(index, 'horaInicio', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '8px',
+                              color: 'white',
+                              fontSize: '14px',
+                              outline: 'none',
+                              transition: 'all 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.border = '1px solid #FF6B00';
+                              e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                              e.target.style.boxShadow = 'none';
+                            }}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            marginBottom: '0.25rem'
+                          }}>
                             Hora Fin
                           </label>
                           <input
                             type="time"
                             value={disp.horaFin}
                             onChange={(e) => handleDisponibilidadChange(index, 'horaFin', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '8px',
+                              color: 'white',
+                              fontSize: '14px',
+                              outline: 'none',
+                              transition: 'all 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.border = '1px solid #FF6B00';
+                              e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                              e.target.style.boxShadow = 'none';
+                            }}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            marginBottom: '0.25rem'
+                          }}>
                             Cupos
                           </label>
                           <input
@@ -712,7 +1321,25 @@ const ProviderServices = () => {
                             value={disp.cuposDisponibles}
                             onChange={(e) => handleDisponibilidadChange(index, 'cuposDisponibles', parseInt(e.target.value))}
                             min="1"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '8px',
+                              color: 'white',
+                              fontSize: '14px',
+                              outline: 'none',
+                              transition: 'all 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.border = '1px solid #FF6B00';
+                              e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                              e.target.style.boxShadow = 'none';
+                            }}
                           />
                         </div>
                       </div>
@@ -722,12 +1349,41 @@ const ProviderServices = () => {
               )}
             </section>
 
-            <div className="flex gap-4 pt-6 border-t">
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
+                style={{
+                  flex: 1,
+                  background: loading ? 'rgba(255, 255, 255, 0.2)' : 'linear-gradient(135deg, #FF6B00 0%, #ff8533 100%)',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s',
+                  boxShadow: loading ? 'none' : '0 4px 6px rgba(255, 107, 0, 0.3)'
+                }}
+                onMouseOver={(e) => {
+                  if (!loading) {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 12px rgba(255, 107, 0, 0.4)';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!loading) {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 6px rgba(255, 107, 0, 0.3)';
+                  }
+                }}
               >
                 {loading ? 'Publicando...' : 'Publicar Servicio'}
               </button>
@@ -735,7 +1391,23 @@ const ProviderServices = () => {
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
               >
                 Cancelar
               </button>

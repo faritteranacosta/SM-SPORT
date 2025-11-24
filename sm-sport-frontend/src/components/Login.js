@@ -113,101 +113,263 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0E1E40 0%, #1a2f5a 50%, #0E1E40 100%)',
+      backgroundAttachment: 'fixed',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '450px'
+      }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
+        }}>
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-8">
-            <div className="flex justify-center mb-4">
-              <div className="bg-white rounded-full p-4">
-                <User className="text-blue-600" size={40} />
+          <div style={{
+            padding: '2rem',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '1rem'
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #FF6B00 0%, #ff8533 100%)',
+                borderRadius: '16px',
+                padding: '1rem',
+                display: 'inline-flex'
+              }}>
+                <User style={{ color: 'white' }} size={40} />
               </div>
             </div>
-            <h2 className="text-3xl font-bold text-white text-center">
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              color: 'white',
+              marginBottom: '0.5rem'
+            }}>
               Bienvenido
             </h2>
-            <p className="text-blue-100 text-center mt-2">
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '14px'
+            }}>
               Inicia sesión en tu cuenta
             </p>
           </div>
 
           {/* Error General */}
           {errors.submit && (
-            <div className="mx-8 mt-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-              <AlertCircle className="text-red-600 flex-shrink-0" size={20} />
-              <p className="text-red-800 text-sm">{errors.submit}</p>
+            <div style={{
+              margin: '0 2rem 1rem 2rem',
+              background: 'rgba(220, 53, 69, 0.2)',
+              border: '1px solid rgba(220, 53, 69, 0.5)',
+              borderRadius: '8px',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <AlertCircle style={{ color: '#ff6b6b', flexShrink: 0 }} size={20} />
+              <p style={{ color: '#ff6b6b', fontSize: '14px', margin: 0 }}>{errors.submit}</p>
             </div>
           )}
 
-          <div className="px-8 py-8">
-            <div className="space-y-6">
+          <div style={{ padding: '0 2rem 2rem 2rem' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {/* Correo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  marginBottom: '0.5rem'
+                }}>
                   Correo Electrónico
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <div style={{ position: 'relative' }}>
+                  <Mail style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(255, 255, 255, 0.5)'
+                  }} size={20} />
                   <input
                     type="email"
                     name="correo"
                     value={formData.correo}
                     onChange={handleChange}
                     placeholder="correo@ejemplo.com"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     autoComplete="email"
+                    style={{
+                      width: '100%',
+                      paddingLeft: '2.5rem',
+                      paddingRight: '1rem',
+                      paddingTop: '0.75rem',
+                      paddingBottom: '0.75rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
                 {errors.correo && (
-                  <p className="mt-1 text-sm text-red-600">{errors.correo}</p>
+                  <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.correo}</p>
                 )}
               </div>
 
               {/* Contraseña */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  marginBottom: '0.5rem'
+                }}>
                   Contraseña
                 </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <div style={{ position: 'relative' }}>
+                  <Lock style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(255, 255, 255, 0.5)'
+                  }} size={20} />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="contrasena"
                     value={formData.contrasena}
                     onChange={handleChange}
                     placeholder="Ingresa tu contraseña"
-                    className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     autoComplete="current-password"
+                    style={{
+                      width: '100%',
+                      paddingLeft: '2.5rem',
+                      paddingRight: '2.5rem',
+                      paddingTop: '0.75rem',
+                      paddingBottom: '0.75rem',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #FF6B00';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255, 107, 0, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.color = 'rgba(255, 255, 255, 0.5)';
+                    }}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
                 {errors.contrasena && (
-                  <p className="mt-1 text-sm text-red-600">{errors.contrasena}</p>
+                  <p style={{ marginTop: '0.25rem', fontSize: '14px', color: '#ff6b6b' }}>{errors.contrasena}</p>
                 )}
               </div>
 
               {/* Recordar sesión y Olvidé contraseña */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
                   <input
                     id="recordar"
                     type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      accentColor: '#FF6B00',
+                      cursor: 'pointer'
+                    }}
                   />
-                  <label htmlFor="recordar" className="ml-2 block text-sm text-gray-700">
+                  <label htmlFor="recordar" style={{
+                    marginLeft: '8px',
+                    fontSize: '14px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    cursor: 'pointer'
+                  }}>
                     Recordar sesión
                   </label>
                 </div>
 
                 <button
                   type="button"
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#FF6B00',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.color = '#ff8533';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.color = '#FF6B00';
+                  }}
                 >
                   ¿Olvidaste tu contraseña?
                 </button>
@@ -215,31 +377,84 @@ const Login = ({ onLogin }) => {
 
               {/* Botón de Login */}
               <button
-                type="button"
-                onClick={handleSubmit}
+                type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed font-medium transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                style={{
+                  width: '100%',
+                  background: loading 
+                    ? 'rgba(255, 255, 255, 0.2)' 
+                    : 'linear-gradient(135deg, #FF6B00 0%, #ff8533 100%)',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s',
+                  boxShadow: loading ? 'none' : '0 4px 6px rgba(255, 107, 0, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => {
+                  if (!loading) {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 12px rgba(255, 107, 0, 0.4)';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!loading) {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 6px rgba(255, 107, 0, 0.3)';
+                  }
+                }}
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Iniciando sesión...
+                    <div style={{
+                      width: '20px',
+                      height: '20px',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      borderTop: '2px solid white',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    <span>Iniciando sesión...</span>
                   </>
                 ) : (
                   <>
                     <LogIn size={20} />
-                    Iniciar Sesión
+                    <span>Iniciar Sesión</span>
                   </>
                 )}
               </button>
 
               {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+              <div style={{ position: 'relative', margin: '1rem 0' }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <div style={{
+                    width: '100%',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
+                <div style={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontSize: '14px'
+                }}>
+                  <span style={{
+                    padding: '0 8px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'rgba(255, 255, 255, 0.6)'
+                  }}>
                     ¿No tienes cuenta?
                   </span>
                 </div>
@@ -248,21 +463,57 @@ const Login = ({ onLogin }) => {
               {/* Link a Registro */}
               <Link
                 to="/register"
-                className="w-full border-2 border-blue-600 text-blue-600 py-3 px-6 rounded-lg hover:bg-blue-50 font-medium transition-all flex items-center justify-center gap-2"
+                style={{
+                  width: '100%',
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  textDecoration: 'none'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }}
               >
                 <User size={20} />
-                Crear Cuenta Nueva
+                <span>Crear Cuenta Nueva</span>
               </Link>
-            </div>
+            </form>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-600">
+        <div style={{
+          textAlign: 'center',
+          marginTop: '2rem'
+        }}>
+          <p style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255, 0.6)'
+          }}>
             © 2024 SM Sport - Plataforma Deportiva de Santa Marta
           </p>
         </div>
+
+        <style>{`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     </div>
   );

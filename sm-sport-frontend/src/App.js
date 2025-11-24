@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import ProviderServices from './components/ProviderServices';
 import Reservas from './components/Reservas';
 import Servicios from './components/Servicios';
+import Perfil from './components/Perfil';
 import './App.css';
 
 // Configuración de axios para incluir el token en las peticiones
@@ -104,7 +105,21 @@ function App() {
           path="/reservas"
           element={
             isAuthenticated ? (
-              <Reservas />
+              (() => {
+                // Mostrar diferentes componentes según el rol
+                try {
+                  const user = JSON.parse(localStorage.getItem('user') || '{}');
+                  if (user.rol === 'PROVEEDOR') {
+                    // Proveedor ve sus reservas en el panel de servicios
+                    return <Navigate to="/mis-servicios" replace state={{ tab: 'reservas' }} />;
+                  } else {
+                    // Cliente ve sus reservas normales
+                    return <Reservas />;
+                  }
+                } catch {
+                  return <Navigate to="/login" />;
+                }
+              })()
             ) : (
               <Navigate to="/login" />
             )
@@ -135,6 +150,16 @@ function App() {
           element={
             isAuthenticated ? (
               <Dashboard onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+        <Route 
+          path="/perfil" 
+          element={
+            isAuthenticated ? (
+              <Perfil />
             ) : (
               <Navigate to="/login" />
             )

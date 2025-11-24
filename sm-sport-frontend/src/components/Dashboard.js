@@ -42,9 +42,35 @@ const Dashboard = ({ onLogout }) => {
     <div className="dashboard">
       <header className="dashboard-header">
         <h1>Bienvenido a SM Sport</h1>
-        <button onClick={handleLogout} className="logout-button">
-          Cerrar Sesión
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button 
+            onClick={() => navigate('/perfil')}
+            style={{
+              padding: '0.5rem 1rem',
+              background: 'rgba(255, 107, 0, 0.2)',
+              border: '1px solid #FF6B00',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = 'rgba(255, 107, 0, 0.3)';
+              e.target.style.borderColor = '#ff8533';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = 'rgba(255, 107, 0, 0.2)';
+              e.target.style.borderColor = '#FF6B00';
+            }}
+          >
+            Perfil
+          </button>
+          <button onClick={handleLogout} className="logout-button">
+            Cerrar Sesión
+          </button>
+        </div>
       </header>
 
       <main className="dashboard-content">
@@ -63,34 +89,49 @@ const Dashboard = ({ onLogout }) => {
         <div className="dashboard-actions">
           <h3>Acciones Rápidas</h3>
           <div className="action-buttons">
-            <button 
-              className="action-button"
-              onClick={() => navigate('/reservas')}
-            >
-              Ver Mis Reservas
-            </button>
-            <button 
-              className="action-button"
-              onClick={() => navigate('/servicios')}
-            >
-              Explorar Servicios
-            </button>
-            {userData?.rol === 'PROVEEDOR' && (
-              <button 
-                className="action-button"
-                onClick={() => navigate('/mis-servicios')}
-              >
-                Gestionar Mis Servicios
-              </button>
+            {userData?.rol === 'PROVEEDOR' ? (
+              // Panel para PROVEEDOR
+              <>
+                <button 
+                  className="action-button"
+                  onClick={() => navigate('/mis-servicios?tab=reservas')}
+                >
+                   Ver Mis Reservas
+                </button>
+                <button 
+                  className="action-button"
+                  onClick={() => navigate('/servicios')}
+                >
+                   Explorar Otros Servicios
+                </button>
+              </>
+            ) : userData?.rol === 'ADMINISTRADOR' ? (
+              // Panel para ADMINISTRADOR
+              <>
+                <button 
+                  className="action-button"
+                  onClick={() => navigate('/servicios')}
+                >
+                   Ver Servicios Creados
+                </button>
+              </>
+            ) : (
+              // Panel para CLIENTE
+              <>
+                <button 
+                  className="action-button"
+                  onClick={() => navigate('/reservas')}
+                >
+                   Ver Mis Reservas
+                </button>
+                <button 
+                  className="action-button"
+                  onClick={() => navigate('/servicios')}
+                >
+                   Explorar Servicios
+                </button>
+              </>
             )}
-            {/* Botón de debugging - acceso directo */}
-            <button 
-              className="action-button"
-              style={{backgroundColor: '#ff6b6b', color: 'white'}}
-              onClick={() => navigate('/mis-servicios')}
-            >
-              🔧 ACCESO DIRECTO: Mis Servicios (DEBUG)
-            </button>
           </div>
         </div>
       </main>

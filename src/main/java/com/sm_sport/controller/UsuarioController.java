@@ -4,6 +4,8 @@ import com.sm_sport.dto.request.ActualizarEstadoUsuarioRequest;
 import com.sm_sport.dto.request.ActualizarPerfilRequest;
 import com.sm_sport.dto.request.FiltroUsuarioRequest;
 import com.sm_sport.dto.response.*;
+import com.sm_sport.exception.ResourceNotFoundException;
+import com.sm_sport.repository.UsuarioRepository;
 import com.sm_sport.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
     /**
      * Obtiene un usuario por su ID
@@ -123,8 +126,13 @@ public class UsuarioController {
             )
     })
     public ResponseEntity<UsuarioResponse> obtenerPerfil() {
-        String idUsuario = obtenerIdUsuarioAutenticado();
-        log.info("GET /api/v1/usuarios/perfil - Usuario: {}", idUsuario);
+        String email = obtenerIdUsuarioAutenticado();
+        log.info("GET /api/v1/usuarios/perfil - Usuario: {}", email);
+
+        // Obtener el ID real del usuario a partir del email
+        String idUsuario = usuarioRepository.findByCorreo(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email))
+                .getIdUsuario();
 
         UsuarioResponse perfil = usuarioService.obtenerPerfil(idUsuario);
 
@@ -171,8 +179,13 @@ public class UsuarioController {
             @Parameter(description = "Datos a actualizar en el perfil", required = true)
             @Valid @RequestBody ActualizarPerfilRequest request) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
-        log.info("PUT /api/v1/usuarios/perfil - Usuario: {}", idUsuario);
+        String email = obtenerIdUsuarioAutenticado();
+        log.info("PUT /api/v1/usuarios/perfil - Usuario: {}", email);
+
+        // Obtener el ID real del usuario a partir del email
+        String idUsuario = usuarioRepository.findByCorreo(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email))
+                .getIdUsuario();
 
         UsuarioResponse usuarioActualizado = usuarioService.actualizarPerfil(idUsuario, request);
 

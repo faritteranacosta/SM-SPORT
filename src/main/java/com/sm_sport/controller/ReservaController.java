@@ -7,6 +7,8 @@ import com.sm_sport.dto.response.MessageResponse;
 import com.sm_sport.dto.response.PageResponse;
 import com.sm_sport.dto.response.ReservaDetalleResponse;
 import com.sm_sport.dto.response.ReservaResponse;
+import com.sm_sport.exception.ResourceNotFoundException;
+import com.sm_sport.repository.ClienteRepository;
 import com.sm_sport.service.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +41,8 @@ import org.springframework.web.bind.annotation.*;
 public class ReservaController {
 
     private final ReservaService reservaService;
+    private final ClienteRepository clienteRepository;
+    private final com.sm_sport.repository.ProveedorRepository proveedorRepository;
 
     /**
      * Crea una nueva reserva para un servicio
@@ -84,7 +88,7 @@ public class ReservaController {
             @Parameter(description = "Datos de la reserva: ID del servicio, fecha, hora y notas opcionales", required = true)
             @Valid @RequestBody CrearReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("POST /api/v1/reservas - Cliente: {} - Servicio: {} - Fecha: {}",
                 idCliente, request.getIdServicio(), request.getFechaReserva());
 
@@ -128,8 +132,14 @@ public class ReservaController {
             @Parameter(description = "Cantidad de elementos por página")
             @RequestParam(defaultValue = "20") Integer tamano) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
         boolean esCliente = esCliente();
+        String idUsuario;
+
+        if (esCliente) {
+            idUsuario = obtenerIdClienteAutenticado();
+        } else {
+            idUsuario = obtenerIdProveedorAutenticado();
+        }
 
         log.info("GET /api/v1/reservas - Usuario: {} - Rol: {} - Página: {}/{}",
                 idUsuario, esCliente ? "CLIENTE" : "PROVEEDOR", pagina, tamano);
@@ -186,7 +196,8 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva", required = true)
             @PathVariable String id) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
+        boolean esCliente = esCliente();
+        String idUsuario = esCliente ? obtenerIdClienteAutenticado() : obtenerIdProveedorAutenticado();
         log.info("GET /api/v1/reservas/{} - Usuario: {}", id, idUsuario);
 
         ReservaResponse reserva = reservaService.obtenerPorId(id);
@@ -245,7 +256,8 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva", required = true)
             @PathVariable String id) {
 
-        String idUsuario = obtenerIdUsuarioAutenticado();
+        boolean esCliente = esCliente();
+        String idUsuario = esCliente ? obtenerIdClienteAutenticado() : obtenerIdProveedorAutenticado();
         log.info("GET /api/v1/reservas/{}/detalle - Usuario: {}", id, idUsuario);
 
         ReservaDetalleResponse detalle = reservaService.obtenerDetalle(id);
@@ -311,7 +323,7 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva a confirmar", required = true)
             @PathVariable String id) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/confirmar - Proveedor: {}", id, idProveedor);
 
         ReservaResponse reserva = reservaService.confirmarReserva(id, idProveedor);
@@ -362,7 +374,7 @@ public class ReservaController {
             @Parameter(description = "Motivo del rechazo", required = true)
             @RequestParam String motivo) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/rechazar - Proveedor: {} - Motivo: {}",
                 id, idProveedor, motivo);
 
@@ -419,7 +431,7 @@ public class ReservaController {
             @Parameter(description = "Motivo de la cancelación", required = true)
             @Valid @RequestBody CancelarReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("DELETE /api/v1/reservas/{} - Cliente: {} - Motivo: {}",
                 id, idCliente, request.getMotivoCancelacion());
 
@@ -469,7 +481,7 @@ public class ReservaController {
             @Parameter(description = "ID de la reserva a finalizar", required = true)
             @PathVariable String id) {
 
-        String idProveedor = obtenerIdUsuarioAutenticado();
+        String idProveedor = obtenerIdProveedorAutenticado();
         log.info("POST /api/v1/reservas/{}/finalizar - Proveedor: {}", id, idProveedor);
 
         ReservaResponse reserva = reservaService.finalizarReserva(id);
@@ -552,7 +564,7 @@ public class ReservaController {
             @Parameter(description = "Datos de la reserva a verificar", required = true)
             @Valid @RequestBody CrearReservaRequest request) {
 
-        String idCliente = obtenerIdUsuarioAutenticado();
+        String idCliente = obtenerIdClienteAutenticado();
         log.info("POST /api/v1/reservas/verificar-disponibilidad - Cliente: {} - Servicio: {}",
                 idCliente, request.getIdServicio());
 
@@ -578,7 +590,25 @@ public class ReservaController {
      */
     private String obtenerIdUsuarioAutenticado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        return authentication.getName(); // Esto retorna el email
+    }
+
+    /**
+     * Obtiene el ID del cliente autenticado buscando por email
+     */
+    private String obtenerIdClienteAutenticado() {
+        String email = obtenerIdUsuarioAutenticado();
+        return clienteRepository.findIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con email: " + email));
+    }
+
+    /**
+     * Obtiene el ID del proveedor autenticado buscando por email
+     */
+    private String obtenerIdProveedorAutenticado() {
+        String email = obtenerIdUsuarioAutenticado();
+        return proveedorRepository.findIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado con email: " + email));
     }
 
     /**

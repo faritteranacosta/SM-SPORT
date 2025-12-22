@@ -1,3 +1,6 @@
+# Docker Compose para desarrollo con hot-reload
+# Uso: docker-compose -f docker-compose.dev.yml up
+
 services:
   postgres_db:
     image: postgres:16
@@ -10,14 +13,13 @@ services:
       - "5432:5432"
     volumes:
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
 
   sm-sport:
     build:
       context: .
-      dockerfile: Dockerfile
-      # Forzar rebuild sin usar caché (descomentar si es necesario)
-      # no_cache: true
-    container_name: sm-sport
+      dockerfile: Dockerfile.dev
+    container_name: sm-sport-dev
     depends_on:
       - postgres_db
     environment:
@@ -26,8 +28,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin
       JWT_SECRET: qvN8s4oVjKjV3pK8XnNQqfT2bSvq4Urz7o9iDg1m6vE=
       JWT_EXPIRATION: 3600000
-
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
     ports:
       - "8080:8080"
-    # Reiniciar automáticamente si el contenedor falla
+    volumes:
+      # Montar el código fuente para hot-reload (requiere Spring DevTools)
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
     restart: unless-stopped
+

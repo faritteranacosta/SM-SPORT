@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, String> {
@@ -26,9 +27,12 @@ public interface ClienteRepository extends JpaRepository<Cliente, String> {
             @Param("fechaFin") LocalDate fechaFin
     );
 
+    // Buscar ID de cliente por email
+    @Query("SELECT u.idUsuario FROM Usuario u WHERE u.correo = :email")
+    Optional<String> findIdByEmail(@Param("email") String email);
+
     // Estadísticas
     @Query("SELECT COUNT(c) FROM Cliente c JOIN c.historialReservas r WHERE r.estado = 'FINALIZADA'")
     Long contarClientesConReservas();
-
 
 }

@@ -1,0 +1,141 @@
+[1mdiff --git a/src/main/java/com/sm_sport/service/impl/ServicioServiceImpl.java b/src/main/java/com/sm_sport/service/impl/ServicioServiceImpl.java[m
+[1mindex 0747e89..ab96e50 100644[m
+[1m--- a/src/main/java/com/sm_sport/service/impl/ServicioServiceImpl.java[m
+[1m+++ b/src/main/java/com/sm_sport/service/impl/ServicioServiceImpl.java[m
+[36m@@ -56,48 +56,110 @@[m [mpublic class ServicioServiceImpl implements ServicioService {[m
+     @Override[m
+     public ServicioResponse publicarServicio(String idProveedor, CrearServicioRequest request) {[m
+         log.info("Publicando servicio para proveedor: {}", idProveedor);[m
+[31m-[m
+[31m-        // Verificar que el proveedor existe[m
+[31m-        Proveedor proveedor = proveedorRepository.findById(idProveedor)[m
+[31m-                .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado"));[m
+[31m-[m
+[31m-        // Validar saldo (si aplica lógica de negocio)[m
+[31m-        if (proveedor.getSaldoCuenta().compareTo(BigDecimal.ZERO) < 0) {[m
+[31m-            throw new BusinessException("Debe recargar saldo para publicar servicios");[m
+[31m-        }[m
+[31m-[m
+[31m-        // Crear servicio[m
+[31m-        Servicio servicio = servicioMapper.toEntity(request);[m
+[31m-        servicio.setProveedor(proveedor);[m
+[31m-        servicio.setEstado(EstadoServicio.PUBLICADO);[m
+[32m+[m[32m        log.debug("Datos del request: nombre={}, deporte={}, precio={}",[m[41m [m
+[32m+[m[32m                request.getNombre(), request.getDeporte(), request.getPrecio());[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            // Verificar que el proveedor existe[m
+[32m+[m[32m            log.debug("Buscando proveedor con ID: {}", idProveedor);[m
+[32m+[m[32m            Proveedor proveedor = proveedorRepository.findById(idProveedor)[m
+[32m+[m[32m                    .orElseThrow(() -> {[m
+[32m+[m[32m                        log.error("Proveedor no encontrado con ID: {}. Verifica que el usuario esté registrado como PROVEEDOR.", idProveedor);[m
+[32m+[m[32m                        return new ResourceNotFoundException([m
+[32m+[m[32m                                String.format("Proveedor no encontrado. El usuario con ID %s no está registrado como PROVEEDOR o no existe.", idProveedor)[m
+[32m+[m[32m                        );[m
+[32m+[m[32m                    });[m
+[32m+[m[41m            [m
+[32m+[m[32m            // Verificar que realmente es un proveedor (por si acaso)[m
+[32m+[m[32m            if (proveedor.getRol() != com.sm_sport.model.enums.Rol.PROVEEDOR) {[m
+[32m+[m[32m                log.error("El usuario con ID {} no es un PROVEEDOR, es: {}", idProveedor, proveedor.getRol());[m
+[32m+[m[32m                throw new BusinessException("El usuario no tiene permisos de proveedor");[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            log.debug("Proveedor encontrado: {} - Saldo: {}", proveedor.getNombre(), proveedor.getSaldoCuenta());[m
+[32m+[m
+[32m+[m[32m            // Validar saldo (si aplica lógica de negocio)[m
+[32m+[m[32m            if (proveedor.getSaldoCuenta() == null) {[m
+[32m+[m[32m                log.warn("El proveedor {} no tiene saldo definido, estableciendo a 0", idProveedor);[m
+[32m+[m[32m                proveedor.setSaldoCuenta(BigDecimal.ZERO);[m
+[32m+[m[32m            }[m
+[32m+[m[41m            [m
+[32m+[m[32m            if (proveedor.getSaldoCuenta().compareTo(BigDecimal.ZERO) < 0) {[m
+[32m+[m[32m                log.error("Proveedor {} tiene saldo negativo: {}", idProveedor, proveedor.getSaldoCuenta());[m
+[32m+[m[32m                throw new BusinessException("Debe recargar saldo para publicar servicios");[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            // Crear servicio[m
+[32m+[m[32m            log.debug("Mapeando request a entidad Servicio");[m
+[32m+[m[32m            Servicio servicio = servicioMapper.toEntity(request);[m
+[32m+[m[32m            servicio.setProveedor(proveedor);[m
+[32m+[m[32m            servicio.setEstado(EstadoServicio.PUBLICADO);[m
+[32m+[m[32m            log.debug("Servicio mapeado: nombre={}, precio={}", servicio.getNombre(), servicio.getPrecio());[m
+ [m
+         // Guardar servicio[m
+         servicio = servicioRepository.save(servicio);[m
+ [m
+         // Crear ubicación[m
+         if (request.getUbicacion() != null) {[m
+[31m-            UbicacionServicio ubicacion = ubicacionMapper.toEntity(request.getUbicacion());[m
+[31m-            ubicacion.setServicio(servicio);[m
+[31m-            ubicacionRepository.save(ubicacion);[m
+[32m+[m[32m            try {[m
+[32m+[m[32m                UbicacionServicio ubicacion = ubicacionMapper.toEntity(request.getUbicacion());[m
+[32m+[m[32m                ubicacion.setServicio(servicio);[m
+[32m+[m[32m                ubicacion = ubicacionRepository.save(ubicacion);[m
+[32m+[m[32m                servicio.setUbicacion(ubicacion); // Establecer la relación bidireccional[m
+[32m+[m[32m            } catch (Exception e) {[m
+[32m+[m[32m                log.error("Error al crear ubicación: ", e);[m
+[32m+[m[32m                throw new BusinessException("Error al crear la ubicación del servicio: " + e.getMessage());[m
+[32m+[m[32m            }[m
+         }[m
+ [m
+         // Crear disponibilidades[m
+         if (request.getDisponibilidad() != null && !request.getDisponibilidad().isEmpty()) {[m
+[31m-            List<DisponibilidadServicio> disponibilidades =[m
+[31m-                    disponibilidadMapper.toEntityList(request.getDisponibilidad());[m
+[31m-[m
+[31m-            Servicio finalServicio = servicio;[m
+[31m-            disponibilidades.forEach(d -> d.setServicio(finalServicio));[m
+[31m-            disponibilidadRepository.saveAll(disponibilidades);[m
+[32m+[m[32m            try {[m
+[32m+[m[32m                List<DisponibilidadServicio> disponibilidades =[m
+[32m+[m[32m                        disponibilidadMapper.toEntityList(request.getDisponibilidad());[m
+[32m+[m
+[32m+[m[32m                Servicio finalServicio = servicio;[m
+[32m+[m[32m                disponibilidades.forEach(d -> {[m
+[32m+[m[32m                    d.setServicio(finalServicio);[m
+[32m+[m[32m                    d.setDisponible(true); // Asegurar que esté disponible[m
+[32m+[m[32m                });[m
+[32m+[m[32m                disponibilidades = disponibilidadRepository.saveAll(disponibilidades);[m
+[32m+[m[32m                servicio.setDisponibilidad(disponibilidades); // Establecer la relación bidireccional[m
+[32m+[m[32m            } catch (Exception e) {[m
+[32m+[m[32m                log.error("Error al crear disponibilidades: ", e);[m
+[32m+[m[32m                throw new BusinessException("Error al crear la disponibilidad del servicio: " + e.getMessage());[m
+[32m+[m[32m            }[m
+         }[m
+ [m
+         // Actualizar contador del proveedor[m
+         proveedor.setTotalServiciosPublicados(proveedor.getTotalServiciosPublicados() + 1);[m
+         proveedorRepository.save(proveedor);[m
+ [m
+[31m-        log.info("Servicio publicado exitosamente: {}", servicio.getIdServicio());[m
+[31m-[m
+[31m-        return servicioMapper.toResponse(servicio);[m
+[32m+[m[32m            // Refrescar el servicio para asegurar que las relaciones estén cargadas[m
+[32m+[m[32m            servicio = servicioRepository.findById(servicio.getIdServicio())[m
+[32m+[m[32m                    .orElseThrow(() -> {[m
+[32m+[m[32m                        log.error("Error al recuperar el servicio creado con ID: {}", servicio.getIdServicio());[m
+[32m+[m[32m                        return new ResourceNotFoundException("Error al recuperar el servicio creado");[m
+[32m+[m[32m                    });[m
+[32m+[m
+[32m+[m[32m            log.info("Servicio publicado exitosamente: {}", servicio.getIdServicio());[m
+[32m+[m
+[32m+[m[32m            // Mapear a respuesta[m
+[32m+[m[32m            log.debug("Mapeando servicio a respuesta");[m
+[32m+[m[32m            ServicioResponse response = servicioMapper.toResponse(servicio);[m
+[32m+[m[32m            log.debug("Respuesta mapeada exitosamente");[m
+[32m+[m[41m            [m
+[32m+[m[32m            return response;[m
+[32m+[m[41m            [m
+[32m+[m[32m        } catch (ResourceNotFoundException | BusinessException e) {[m
+[32m+[m[32m            // Re-lanzar excepciones de negocio[m
+[32m+[m[32m            log.error("Error de negocio al publicar servicio: {}", e.getMessage());[m
+[32m+[m[32m            throw e;[m
+[32m+[m[32m        } catch (Exception e) {[m
+[32m+[m[32m            // Capturar cualquier otra excepción[m
+[32m+[m[32m            log.error("Error inesperado al publicar servicio para proveedor {}: ", idProveedor, e);[m
+[32m+[m[32m            throw new BusinessException("Error al publicar el servicio: " + e.getMessage());[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+     @Override[m

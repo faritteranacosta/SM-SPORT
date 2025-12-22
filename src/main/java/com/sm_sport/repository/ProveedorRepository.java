@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProveedorRepository extends JpaRepository<Proveedor, String> {
@@ -30,6 +31,10 @@ public interface ProveedorRepository extends JpaRepository<Proveedor, String> {
     Page<Proveedor> findByCalificacionPromedioGreaterThanEqualOrderByCalificacionPromedioDesc(
             BigDecimal calificacion, Pageable pageable
     );
+
+    // Buscar ID de proveedor por email
+    @Query("SELECT u.idUsuario FROM Usuario u WHERE u.correo = :email")
+    Optional<String> findIdByEmail(@Param("email") String email);
 
     // Estadísticas
     @Query("SELECT AVG(p.calificacionPromedio) FROM Proveedor p WHERE p.verificado = true")

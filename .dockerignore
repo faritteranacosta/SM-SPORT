@@ -1,0 +1,15 @@
+target/
+.mvn/
+mvnw
+mvnw.cmd
+.git
+.gitignore
+README.md
+*.md
+.idea/
+.vscode/
+*.iml
+.DS_Store
+node_modules/
+sm-sport-frontend/
+

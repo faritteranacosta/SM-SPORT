@@ -1,5 +1,58 @@
 # SM-SPORT
 
+## 🐳 Docker - Reconstrucción del Backend
+
+Cuando se realizan cambios en el código del backend, es necesario reconstruir la imagen Docker para que los cambios se reflejen.
+
+### Opción 1: Scripts de Reconstrucción (Recomendado)
+
+**Windows:**
+```bash
+rebuild-docker.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x rebuild-docker.sh
+./rebuild-docker.sh
+```
+
+### Opción 2: Comandos Manuales
+
+```bash
+# Detener contenedores
+docker-compose down
+
+# Reconstruir sin caché
+docker-compose build --no-cache sm-sport
+
+# Iniciar contenedores
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f sm-sport
+```
+
+### Opción 3: Reconstrucción Rápida (con caché)
+
+```bash
+docker-compose up -d --build sm-sport
+```
+
+### Modo Desarrollo (Hot Reload)
+
+Para desarrollo con recarga automática de cambios:
+
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
+
+**Nota:** El modo desarrollo requiere Spring DevTools en el `pom.xml`.
+
+---
+
+# SM-SPORT
+
 ```mermaid
 flowchart TB
  subgraph subGraph0["Capa de Presentación"]
